@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en" data-mood="sunrise">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#efe6ff" />
+    <meta name="color-scheme" content="light dark" />
+    <!--
+      ✏️ Edit these to match src/content/profile.ts (this file can't read it):
+      the tab title, the description, and the link-preview tags. og:url and the
+      og:image / twitter:image addresses must be your site's full address.
+    -->
+    <title>my tiny OS</title>
+    <meta name="description" content="A personal website that looks like a tiny operating system: projects, stories and a guestbook." />
+    <meta property="og:title" content="my tiny OS" />
+    <meta property="og:description" content="Projects, stories and the things I've built, inside a tiny operating system. Come poke around!" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="my tiny OS" />
+    <meta property="og:url" content="https://YOUR-USERNAME.github.io/my-tiny-os/" />
+    <meta property="og:image" content="https://YOUR-USERNAME.github.io/my-tiny-os/og.jpg" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="The demo site on a computer: a pastel desktop with app icons and a welcome card." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="my tiny OS" />
+    <meta name="twitter:description" content="Projects, stories and the things I've built, inside a tiny operating system. Come poke around!" />
+    <meta name="twitter:image" content="https://YOUR-USERNAME.github.io/my-tiny-os/og.jpg" />
+    <meta name="twitter:image:alt" content="The demo site on a computer: a pastel desktop with app icons and a welcome card." />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+    <script>
+      // Apply the saved mood before the first paint, so night owls never see a sunrise flash.
+      try {
+        var saved = JSON.parse(localStorage.getItem('tinyos-settings') || 'null')
+        var mood = saved && saved.state && saved.state.mood
+        if (mood === 'sunset' || mood === 'night') document.documentElement.dataset.mood = mood
+      } catch (e) {
+        /* private mode / blocked storage: keep sunrise */
+      }
+    </script>
+    <style>
+      /* First paint, before the JS arrives: the boot screen's pre-dawn sky, so a slow
+         phone connection shows the OS's colours instead of a blank page. React replaces it. */
+      .preboot {
+        position: fixed;
+        inset: 0;
+        background:
+          radial-gradient(70% 38% at 50% 46%, rgb(255 150 128 / 0.75), transparent 70%),
+          linear-gradient(180deg, #3a2662 0%, #6b4a8c 34%, #c27a98 50%, #8a5c8e 66%, #4a3470 100%);
+      }
+      /* the reduced-motion boot is a still sunrise in the mood's own colours (the body background) */
+      @media (prefers-reduced-motion: reduce) {
+        .preboot {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"><div class="preboot" aria-hidden="true"></div></div>
+    <noscript>
+      <p style="position: fixed; inset: 45% 16px auto; z-index: 1; text-align: center; color: #fff; font: 600 17px/1.4 system-ui, sans-serif">
+        This site needs JavaScript to boot. Turn it on and come say hi!
+      </p>
+    </noscript>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

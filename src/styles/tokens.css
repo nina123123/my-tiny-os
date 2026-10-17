@@ -1,0 +1,244 @@
+/*
+ * Design tokens: the whole look lives here.
+ * Palette: "sunrise pastel + coral" — dreamy lavender → peach → butter light,
+ * with a brave coral accent and plum ink.
+ *
+ * Three moods are switchable at runtime via <html data-mood="…">:
+ *   sunrise (default) · sunset · night
+ * Components must only use the semantic tokens (--ink, --surface, --accent …)
+ * so every mood works automatically. Raw palette tokens are for illustration
+ * (icons, cover art, stickers) where a fixed color is intended.
+ */
+
+:root {
+  /* ── raw palette ─────────────────────────────────────────────── */
+  --lavender-100: #f5f0ff;
+  --lavender-200: #e9e1ff;
+  --lavender-300: #d6c8ff;
+  --lavender-400: #bba6ff;
+  --lavender-500: #9c82f0;
+  --peach-100: #fff3ec;
+  --peach-200: #ffe1d2;
+  --peach-300: #ffcbb3;
+  --peach-400: #ffb08f;
+  --butter-100: #fffbe6;
+  --butter-200: #fff4c7;
+  --butter-300: #ffe99a;
+  --butter-400: #ffd96a;
+  --mint-200: #d4f4e6;
+  --mint-300: #aeead0;
+  --mint-400: #7fd8b2;
+  --sky-200: #d8eaff;
+  --sky-300: #b5d6ff;
+  --pink-200: #ffd6e7;
+  --pink-300: #ffb3d1;
+  --coral-200: #ffc9c1;
+  --coral-300: #ffa196;
+  --coral-400: #ff8475;
+  --coral-500: #ff6b5b;
+  --coral-600: #ee5444;
+  --coral-700: #c93a2c;
+  --plum-950: #1a1230;
+  --plum-900: #2a1842;
+  --plum-800: #3b2559;
+  --plum-600: #5e4782;
+  --plum-400: #8c7aa8;
+  --plum-200: #cbbfdc;
+
+  /* ── semantic: sunrise (default) ─────────────────────────────── */
+  color-scheme: light;
+  --bg: #fbf5fb; /* page fallback behind the wallpaper */
+  --bg-grad: radial-gradient(120% 90% at 10% 10%, var(--lavender-200) 0%, transparent 60%),
+    radial-gradient(90% 80% at 90% 20%, var(--peach-200) 0%, transparent 60%),
+    radial-gradient(100% 90% at 60% 100%, var(--butter-200) 0%, transparent 65%),
+    linear-gradient(140deg, #efe6ff 0%, #ffe6da 55%, #fff6d6 100%);
+
+  --ink: var(--plum-800); /* primary text */
+  --ink-2: rgb(59 37 89 / 0.74); /* secondary text */
+  --ink-3: rgb(59 37 89 / 0.55); /* tertiary / captions (≥4.5:1 on light glass only at ≥14px bold or 18px) */
+  --ink-inverse: #fff;
+
+  --accent: var(--coral-500);
+  --accent-hover: var(--coral-600);
+  --accent-ink: #b03224; /* deep coral for text, rings and selections on light glass (≥4.5:1 by day) */
+  --accent-soft: rgb(255 107 91 / 0.14);
+  --accent-glow: rgb(255 107 91 / 0.35);
+  /* text/glyphs on coral: plum ink keeps the bright coral AND passes AA (≈5.7:1;
+     white on coral-500 is only ≈2.8:1). Night swaps in its own dark ink. */
+  --on-accent: var(--plum-900);
+
+  --surface: rgb(255 255 255 / 0.56); /* frosted window body */
+  --surface-strong: rgb(255 255 255 / 0.8); /* cards on glass, menus */
+  --surface-solid: #fffbfd; /* when blur is unavailable */
+  --surface-sunken: rgb(59 37 89 / 0.05); /* inputs, wells */
+  --surface-hover: rgb(59 37 89 / 0.06);
+  --border: rgb(255 255 255 / 0.78); /* glass edge highlight */
+  --hairline: rgb(59 37 89 / 0.1); /* dividers */
+  --glass-blur: 28px;
+  --glass-saturate: 170%;
+
+  --shadow-sm: 0 1px 2px rgb(59 37 89 / 0.06), 0 2px 8px -2px rgb(59 37 89 / 0.1);
+  --shadow-md: 0 4px 12px -4px rgb(59 37 89 / 0.14), 0 14px 34px -14px rgb(59 37 89 / 0.24);
+  --shadow-lg: 0 8px 24px -8px rgb(59 37 89 / 0.18), 0 30px 70px -24px rgb(59 37 89 / 0.34);
+  --shadow-window: 0 1px 0 rgb(255 255 255 / 0.6) inset, 0 2px 6px rgb(59 37 89 / 0.06),
+    0 24px 60px -18px rgb(59 37 89 / 0.34);
+  --shadow-window-focus: 0 1px 0 rgb(255 255 255 / 0.7) inset, 0 2px 8px rgb(59 37 89 / 0.08),
+    0 36px 90px -22px rgb(59 37 89 / 0.46);
+  /* deep coral outer ring: ≥3:1 against light glass (bright --accent is only ≈2.3:1) */
+  --focus-ring: 0 0 0 2px rgb(255 255 255 / 0.95), 0 0 0 4.5px var(--accent-ink);
+
+  /* window controls (close / minimize / maximize) */
+  --ctl-close: #ff7a6b;
+  --ctl-min: #ffcf5c;
+  --ctl-max: #7fd8b2;
+  --ctl-glyph: rgb(59 37 89 / 0.62);
+
+  /* wallpaper colors read by the WebGL wallpaper (hex only, no vars) */
+  --wp-a: #e6dcff;
+  --wp-b: #ffd9c7;
+  --wp-c: #fff1bd;
+  --wp-d: #ff8f80;
+  --wp-e: #cfe6ff;
+
+  /* the logo's sun (components/Logo.tsx), top → bottom of its gradient */
+  --logo-1: var(--butter-400);
+  --logo-2: #ffa07a;
+  --logo-3: var(--coral-500);
+
+  /* ── type ───────────────────────────────────────────────────── */
+  --font-display: 'Fraunces Variable', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+  --font-body: 'DM Sans Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-hand: 'Caveat', 'Segoe Print', 'Bradley Hand', cursive;
+  --font-mono: 'DM Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  /* Fraunces at its dreamiest: pair with font-family: var(--font-display) */
+  --display-axes: 'SOFT' 100, 'WONK' 1;
+
+  --text-2xs: 11px;
+  --text-xs: 12px;
+  --text-sm: 13.5px;
+  --text-base: 15px;
+  --text-md: 17px;
+  --text-lg: 20px;
+  --text-xl: 26px;
+  --text-2xl: 34px;
+  --text-3xl: 46px;
+  --text-4xl: 64px;
+
+  /* ── shape & space (4px grid) ───────────────────────────────── */
+  --r-xs: 6px;
+  --r-sm: 10px;
+  --r-md: 14px;
+  --r-lg: 20px;
+  --r-xl: 28px;
+  --r-pill: 999px;
+  --r-window: 22px;
+  --r-icon: 24%; /* app icon squircle-ish radius (percentage of icon size) */
+
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 20px;
+  --s-6: 24px;
+  --s-8: 32px;
+  --s-10: 40px;
+  --s-12: 48px;
+  --s-16: 64px;
+
+  /* ── motion ─────────────────────────────────────────────────── */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --dur-1: 120ms;
+  --dur-2: 200ms;
+  --dur-3: 320ms;
+  --dur-4: 520ms;
+  --dur-5: 800ms;
+
+  /* ── layers ─────────────────────────────────────────────────── */
+  --z-wallpaper: 0;
+  --z-desktop: 10;
+  --z-windows: 100; /* windows use 100 + their z order */
+  --z-dock: 5000;
+  --z-menubar: 5100;
+  --z-menu: 5200;
+  --z-toast: 6000;
+  --z-boot: 9000;
+  --z-fx: 9500;
+
+  /* ── chrome sizes ───────────────────────────────────────────── */
+  --menubar-h: 32px;
+  --dock-h: 78px; /* dock height incl. bottom gap */
+  --titlebar-h: 44px;
+}
+
+/* ── sunset: warmer, pinker, golden hour ─────────────────────── */
+:root[data-mood='sunset'] {
+  --bg: #fff1ee;
+  --bg-grad: radial-gradient(110% 90% at 15% 0%, var(--pink-200) 0%, transparent 60%),
+    radial-gradient(90% 80% at 90% 30%, var(--peach-300) 0%, transparent 60%),
+    radial-gradient(110% 90% at 50% 100%, var(--butter-300) 0%, transparent 65%),
+    linear-gradient(160deg, #ffd9e8 0%, #ffc8b2 50%, #ffe39c 100%);
+  --ink: #45213f;
+  --ink-2: rgb(69 33 63 / 0.76);
+  --ink-3: rgb(69 33 63 / 0.58);
+  --surface: rgb(255 250 247 / 0.54);
+  --surface-strong: rgb(255 250 247 / 0.82);
+  --hairline: rgb(69 33 63 / 0.12);
+  --wp-a: #ffc6dc;
+  --wp-b: #ffb398;
+  --wp-c: #ffe08a;
+  --wp-d: #ff6b5b;
+  --wp-e: #cbb8ff;
+}
+
+/* ── night: dreamy dark mode, plum sky with glowing coral ────── */
+:root[data-mood='night'] {
+  color-scheme: dark;
+  --bg: var(--plum-950);
+  --bg-grad: radial-gradient(110% 90% at 15% 10%, #3a2466 0%, transparent 60%),
+    radial-gradient(90% 80% at 85% 25%, #2b3a78 0%, transparent 60%),
+    radial-gradient(120% 90% at 50% 110%, #5a2a5e 0%, transparent 65%),
+    linear-gradient(160deg, #1d1438 0%, #170f2c 100%);
+  --ink: #f6f0ff;
+  --ink-2: rgb(246 240 255 / 0.78);
+  --ink-3: rgb(246 240 255 / 0.58);
+  --ink-inverse: var(--plum-900);
+  --accent: #ff7d6e;
+  --accent-hover: #ff9488;
+  --accent-ink: #ffa196;
+  --accent-soft: rgb(255 125 110 / 0.18);
+  --accent-glow: rgb(255 125 110 / 0.45);
+  --on-accent: #2a1222;
+  --surface: rgb(36 25 60 / 0.6);
+  --surface-strong: rgb(44 31 72 / 0.88);
+  --surface-solid: #231a3a;
+  --surface-sunken: rgb(255 255 255 / 0.06);
+  --surface-hover: rgb(255 255 255 / 0.08);
+  --border: rgb(255 255 255 / 0.14);
+  --hairline: rgb(255 255 255 / 0.1);
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.3), 0 2px 8px -2px rgb(0 0 0 / 0.35);
+  --shadow-md: 0 4px 12px -4px rgb(0 0 0 / 0.4), 0 14px 34px -14px rgb(0 0 0 / 0.5);
+  --shadow-lg: 0 8px 24px -8px rgb(0 0 0 / 0.45), 0 30px 70px -24px rgb(0 0 0 / 0.6);
+  --shadow-window: 0 1px 0 rgb(255 255 255 / 0.08) inset, 0 2px 6px rgb(0 0 0 / 0.3),
+    0 24px 60px -18px rgb(0 0 0 / 0.6);
+  --shadow-window-focus: 0 1px 0 rgb(255 255 255 / 0.1) inset, 0 2px 8px rgb(0 0 0 / 0.35),
+    0 36px 90px -22px rgb(0 0 0 / 0.7), 0 0 0 1px rgb(255 125 110 / 0.12);
+  --focus-ring: 0 0 0 2px var(--plum-950), 0 0 0 4.5px var(--accent);
+  --ctl-glyph: rgb(26 18 48 / 0.7);
+  --wp-a: #2a1a52;
+  --wp-b: #4a2770;
+  --wp-c: #23346e;
+  --wp-d: #ff7d6e;
+  --wp-e: #8b6fe8;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-1: 0ms;
+    --dur-2: 0ms;
+    --dur-3: 0ms;
+    --dur-4: 0ms;
+    --dur-5: 0ms;
+  }
+}

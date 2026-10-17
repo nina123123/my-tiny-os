@@ -1,0 +1,201 @@
+/* In-window photo lightbox. Prefix: lbx- (shared by project + about) */
+
+.lbx {
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 8px;
+  padding: 14px 14px 16px;
+  color: #fff;
+  container-type: inline-size;
+}
+
+/* In a phone sheet the viewer lives in the sheet's panel, over its header
+   (which sits under the status bar on a full-screen sheet). */
+.lbx.lbx--sheet {
+  z-index: 60;
+  padding-top: calc(var(--mshell-sb, 44px) + 8px);
+  padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+}
+
+.msheet[data-card] .lbx.lbx--sheet {
+  padding-top: 14px;
+}
+
+.lbx__scrim {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background:
+    radial-gradient(80% 60% at 50% 40%, rgb(94 71 130 / 0.55), transparent 70%),
+    rgb(26 18 48 / 0.86);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  backdrop-filter: blur(16px) saturate(140%);
+  cursor: zoom-out;
+}
+
+.lbx__top {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.lbx__count {
+  padding: 5px 11px;
+  border-radius: var(--r-pill);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  background: rgb(255 255 255 / 0.14);
+}
+
+.lbx__btn {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  color: #fff;
+  background: rgb(255 255 255 / 0.16);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.18);
+  transition:
+    background-color var(--dur-2) var(--ease-out),
+    transform var(--dur-2) var(--ease-spring);
+}
+
+.lbx__btn:hover {
+  background: rgb(255 255 255 / 0.28);
+  transform: scale(1.06);
+}
+
+.lbx__btn:active {
+  transform: scale(0.94);
+}
+
+.lbx__btn:focus-visible {
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 2px var(--plum-950),
+    0 0 0 4.5px var(--coral-400);
+}
+
+.lbx__close:hover {
+  background: var(--coral-500);
+}
+
+.lbx__stage {
+  position: relative;
+  z-index: 1;
+  min-height: 0;
+  display: grid;
+  place-items: center;
+  padding: 0 56px;
+  container-type: size;
+  pointer-events: none;
+}
+
+.lbx__figure {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  margin: 0;
+  max-width: 100%;
+  pointer-events: auto;
+  /* motion's drag="x" writes an inline `pan-y`, which would block pinch-zoom;
+     let the browser pinch (it cancels the swipe) while horizontal drags still swipe */
+  touch-action: pan-y pinch-zoom !important;
+  cursor: grab;
+}
+
+.lbx__figure:active {
+  cursor: grabbing;
+}
+
+.lbx__img {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100cqw;
+  max-height: calc(100cqh - 64px);
+  object-fit: contain;
+  border-radius: 14px;
+  box-shadow: 0 30px 80px -20px rgb(0 0 0 / 0.6);
+  user-select: none;
+  -webkit-user-drag: none;
+  background: rgb(255 255 255 / 0.06);
+}
+
+.lbx__caption {
+  max-width: 60ch;
+  padding: 0 8px;
+  font-size: 14.5px;
+  line-height: 1.45;
+  text-align: center;
+  color: rgb(255 255 255 / 0.92);
+}
+
+.lbx__nav {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  translate: 0 -50%;
+}
+
+.lbx__nav--prev {
+  left: 12px;
+}
+
+.lbx__nav--next {
+  right: 12px;
+}
+
+.lbx__dots {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  min-height: 8px;
+}
+
+.lbx__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgb(255 255 255 / 0.3);
+  transition:
+    width var(--dur-3) var(--ease-out),
+    background-color var(--dur-3) var(--ease-out);
+}
+
+.lbx__dot.is-on {
+  width: 18px;
+  border-radius: 99px;
+  background: var(--coral-400);
+}
+
+@container (max-width: 560px) {
+  .lbx {
+    padding-bottom: 14px;
+  }
+
+  .lbx__stage {
+    padding: 0;
+  }
+
+  .lbx__nav {
+    top: auto;
+    bottom: 8px;
+    translate: none;
+  }
+
+  .lbx__dots {
+    align-items: center;
+    min-height: 44px;
+  }
+}

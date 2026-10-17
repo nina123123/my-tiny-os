@@ -1,0 +1,407 @@
+/* The boot screen — see BootScreen.tsx */
+
+.boot {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-boot);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  color: var(--ink);
+  -webkit-user-select: none;
+  user-select: none;
+  transform-origin: 50% 40%;
+  touch-action: manipulation;
+}
+
+/* ── sky ───────────────────────────────────────────────────────────── */
+.boot__sky,
+.boot__dawn,
+.boot__light,
+.boot__clouds {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.boot__sky {
+  background: var(--bg);
+  background-image: var(--bg-grad);
+}
+
+/* pre-dawn: dusky plum overhead, a coral blush low on the horizon */
+.boot__dawn {
+  background:
+    radial-gradient(70% 38% at 50% 46%, rgb(255 150 128 / 0.75), transparent 70%),
+    linear-gradient(180deg, #3a2662 0%, #6b4a8c 34%, #c27a98 50%, #8a5c8e 66%, #4a3470 100%);
+}
+
+/* the warm wash of light that blooms as the sun comes up */
+.boot__light {
+  background: radial-gradient(52vmax 40vmax at 50% 42%, rgb(255 225 160 / 0.62), rgb(255 190 170 / 0.24) 45%, transparent 72%);
+  transform-origin: 50% 42%;
+}
+
+:root[data-mood='night'] .boot__light {
+  background: radial-gradient(52vmax 40vmax at 50% 42%, rgb(255 140 120 / 0.34), rgb(140 110 232 / 0.18) 45%, transparent 72%);
+}
+
+.boot__cloud {
+  position: absolute;
+  display: block;
+  border-radius: 50%;
+  background: rgb(255 255 255 / 0.55);
+  filter: blur(22px);
+  animation: boot-cloud 9s linear infinite alternate;
+}
+
+:root[data-mood='night'] .boot__cloud {
+  background: rgb(200 180 255 / 0.1);
+}
+
+.boot__cloud--1 {
+  width: 38vmax;
+  height: 9vmax;
+  left: -8vmax;
+  top: 18%;
+}
+
+.boot__cloud--2 {
+  width: 30vmax;
+  height: 7vmax;
+  right: -6vmax;
+  top: 30%;
+  animation-duration: 11s;
+  animation-direction: alternate-reverse;
+  opacity: 0.8;
+}
+
+.boot__cloud--3 {
+  width: 44vmax;
+  height: 10vmax;
+  left: 20%;
+  bottom: 6%;
+  animation-duration: 13s;
+  opacity: 0.6;
+}
+
+@keyframes boot-cloud {
+  to {
+    transform: translate3d(4vmax, 0, 0);
+  }
+}
+
+/* ── stage ─────────────────────────────────────────────────────────── */
+.boot__stage {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 var(--s-6);
+  margin-top: -4vh;
+  text-align: center;
+}
+
+.boot__scene {
+  position: relative;
+  width: clamp(220px, 56vw, 320px);
+  margin-bottom: var(--s-4);
+}
+
+.boot__horizon-clip {
+  position: relative;
+  height: 112px;
+  /* clip only below the horizon so the sun's glow can spill into the sky */
+  clip-path: inset(-240px -240px 0 -240px);
+}
+
+.boot__sun {
+  position: absolute;
+  left: 50%;
+  bottom: -50px;
+  width: 140px;
+  height: 140px;
+  margin-left: -70px;
+  will-change: transform;
+}
+
+.boot__rays {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.boot__rays-spin {
+  transform-origin: 0 0;
+  animation: boot-spin 28s linear infinite;
+}
+
+@keyframes boot-spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+.boot__disc {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 84px;
+  height: 84px;
+  margin: -42px 0 0 -42px;
+  border-radius: 50%;
+  background:
+    radial-gradient(60% 50% at 38% 30%, rgb(255 255 255 / 0.65), transparent 70%),
+    linear-gradient(180deg, var(--butter-400) 0%, #ffa07a 58%, var(--coral-500) 100%);
+  box-shadow:
+    0 0 32px 6px rgb(255 190 110 / 0.55),
+    0 0 90px 30px rgb(255 140 120 / 0.28);
+}
+
+.boot__horizon {
+  position: relative;
+  height: 2.5px;
+  border-radius: var(--r-pill);
+  background: linear-gradient(90deg, transparent, var(--coral-400) 22%, var(--butter-400) 50%, var(--coral-400) 78%, transparent);
+}
+
+.boot__horizon::after {
+  content: '';
+  position: absolute;
+  inset: -6px 10%;
+  border-radius: var(--r-pill);
+  background: radial-gradient(50% 50% at 50% 50%, rgb(255 200 140 / 0.7), transparent 70%);
+  filter: blur(4px);
+}
+
+.boot__reflection {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  padding-top: 9px;
+  transform-origin: 50% 0;
+}
+
+.boot__reflection span {
+  display: block;
+  height: 3px;
+  border-radius: var(--r-pill);
+  background: linear-gradient(90deg, transparent, var(--coral-300), var(--butter-300), var(--coral-300), transparent);
+  animation: boot-ripple 2.4s var(--ease-in-out) infinite alternate;
+}
+
+.boot__reflection span:nth-child(1) {
+  width: 46%;
+  opacity: 0.85;
+}
+
+.boot__reflection span:nth-child(2) {
+  width: 30%;
+  opacity: 0.6;
+  animation-delay: -0.8s;
+}
+
+.boot__reflection span:nth-child(3) {
+  width: 16%;
+  opacity: 0.4;
+  animation-delay: -1.6s;
+}
+
+@keyframes boot-ripple {
+  to {
+    transform: scaleX(0.82) translateX(4%);
+  }
+}
+
+/* ── wordmark ──────────────────────────────────────────────────────── */
+.boot__word {
+  font-family: var(--font-display);
+  font-variation-settings: var(--display-axes);
+  font-weight: 600;
+  /* shrinks for names longer than six letters (--boot-len), so it always fits the screen */
+  font-size: min(clamp(54px, 15vw, 96px), calc(150vw / var(--boot-len, 6)));
+  line-height: 1;
+  letter-spacing: -0.025em;
+  white-space: nowrap;
+  filter: drop-shadow(0 6px 22px rgb(255 255 255 / 0.4));
+}
+
+:root[data-mood='night'] .boot__word {
+  filter: drop-shadow(0 6px 26px rgb(255 125 110 / 0.28));
+}
+
+.boot__ch {
+  display: inline-block;
+  --c: var(--ink);
+  --wave: var(--accent);
+}
+
+.boot__ch--os {
+  font-style: italic;
+  font-weight: 560;
+  --c: var(--accent);
+  --wave: var(--lavender-500);
+}
+
+.boot__ch--gap {
+  margin-left: 0.03em;
+}
+
+.boot__shine {
+  display: inline-block;
+  color: var(--c);
+  animation: boot-shine 560ms var(--ease-in-out) calc(var(--boot-k, 1) * 1150ms + var(--i) * 90ms) 1 both;
+}
+
+@keyframes boot-shine {
+  0%,
+  100% {
+    color: var(--c);
+    transform: none;
+    text-shadow: none;
+  }
+  50% {
+    color: var(--wave);
+    transform: translateY(-5px);
+    text-shadow:
+      0 0 18px rgb(255 255 255 / 0.9),
+      0 0 34px var(--accent-glow);
+  }
+}
+
+.boot__hi {
+  position: relative;
+  margin-top: var(--s-2);
+  font-size: 28px;
+  color: var(--accent-ink);
+}
+
+.boot__hi-sparkle {
+  position: absolute;
+  right: -22px;
+  top: -8px;
+  width: 18px;
+  height: 18px;
+  color: var(--butter-400);
+  filter: drop-shadow(0 0 6px rgb(255 217 106 / 0.8));
+  animation: boot-twinkle 1.6s var(--ease-in-out) infinite alternate;
+}
+
+:root:not([data-mood='night']) .boot__hi-sparkle {
+  color: var(--coral-400);
+  filter: drop-shadow(0 0 6px rgb(255 160 120 / 0.6));
+}
+
+@keyframes boot-twinkle {
+  to {
+    transform: scale(0.6) rotate(30deg);
+    opacity: 0.6;
+  }
+}
+
+/* ── progress ──────────────────────────────────────────────────────── */
+.boot__progress {
+  display: grid;
+  justify-items: center;
+  gap: var(--s-3);
+  margin-top: var(--s-8);
+}
+
+.boot__bar {
+  position: relative;
+  width: clamp(180px, 48vw, 236px);
+  height: 7px;
+  border-radius: var(--r-pill);
+  overflow: hidden;
+  background: rgb(255 255 255 / 0.42);
+  box-shadow:
+    inset 0 1px 2px rgb(59 37 89 / 0.12),
+    0 0 0 1px rgb(255 255 255 / 0.5);
+}
+
+:root[data-mood='night'] .boot__bar {
+  background: rgb(255 255 255 / 0.1);
+  box-shadow:
+    inset 0 1px 2px rgb(0 0 0 / 0.3),
+    0 0 0 1px rgb(255 255 255 / 0.08);
+}
+
+.boot__fill {
+  position: absolute;
+  inset: 0;
+  display: block;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--coral-500), var(--coral-400) 40%, var(--butter-400));
+  box-shadow: 0 0 12px var(--accent-glow);
+}
+
+.boot__msgs {
+  min-height: 20px;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.02em;
+  color: var(--ink-2);
+}
+
+.boot__msg {
+  display: inline-block;
+}
+
+/* ── skip ──────────────────────────────────────────────────────────── */
+.boot__skip {
+  position: absolute;
+  left: 50%;
+  bottom: calc(var(--s-5) + env(safe-area-inset-bottom, 0px));
+  translate: -50% 0;
+  min-height: 44px;
+  padding: 0 var(--s-5);
+  border-radius: var(--r-pill);
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  transition:
+    background-color var(--dur-2) var(--ease-out),
+    color var(--dur-2) var(--ease-out);
+}
+
+.boot__skip:hover {
+  background: var(--surface-hover);
+  color: var(--ink);
+}
+
+/* reduced motion: a still composition that simply fades */
+.boot[data-still] .boot__rays-spin,
+.boot[data-still] .boot__reflection span,
+.boot[data-still] .boot__cloud,
+.boot[data-still] .boot__shine,
+.boot[data-still] .boot__hi-sparkle {
+  animation: none;
+}
+
+@media (max-height: 560px) {
+  .boot__horizon-clip {
+    height: 84px;
+  }
+
+  /* phones in landscape: a smaller wordmark, so the whole stack fits */
+  .boot__word {
+    font-size: min(clamp(44px, 16vh, 72px), calc(150vw / var(--boot-len, 6)));
+  }
+
+  .boot__progress {
+    margin-top: var(--s-5);
+  }
+
+  /* no room under the stack: tuck "skip" into the top-right corner instead */
+  .boot__skip {
+    top: calc(var(--s-3) + env(safe-area-inset-top, 0px));
+    right: calc(var(--s-4) + env(safe-area-inset-right, 0px));
+    bottom: auto;
+    left: auto;
+    translate: none;
+  }
+}

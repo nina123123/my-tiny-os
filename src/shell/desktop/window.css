@@ -1,0 +1,393 @@
+/* Windows */
+
+.win-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.win {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: auto;
+  outline: none;
+  will-change: transform;
+}
+
+.win:focus-visible {
+  box-shadow: none;
+  border-radius: var(--r-window);
+}
+
+.win__frame {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--r-window);
+  overflow: hidden;
+  box-shadow: var(--shadow-window);
+  transition: box-shadow var(--dur-3) var(--ease-out);
+}
+
+.win.is-focused .win__frame {
+  box-shadow: var(--shadow-window-focus);
+}
+
+/* keyboard users see which window holds focus */
+.win:focus-visible .win__frame {
+  box-shadow:
+    var(--shadow-window-focus),
+    0 0 0 2px var(--accent);
+}
+
+/* a whisper of pastel light along the top edge of focused windows */
+.win__frame.glass::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: 1px;
+  z-index: 2;
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.9) 30%, rgb(255 203 179 / 0.9) 70%, transparent);
+  opacity: 0;
+  transition: opacity var(--dur-3) var(--ease-out);
+  pointer-events: none;
+}
+
+.win.is-focused .win__frame.glass::before {
+  opacity: 1;
+}
+
+:root[data-mood='night'] .win__frame.glass::before {
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.2) 30%, rgb(255 125 110 / 0.45) 70%, transparent);
+}
+
+/* ── title bar ──────────────────────────────────────────────────── */
+
+.win__titlebar {
+  position: relative;
+  z-index: 1;
+  flex: none;
+  height: var(--titlebar-h);
+  display: grid;
+  grid-template-columns: 90px minmax(0, 1fr) 90px;
+  align-items: center;
+  padding: 0 10px;
+  border-bottom: 1px solid var(--hairline);
+  background: linear-gradient(to bottom, rgb(255 255 255 / 0.32), rgb(255 255 255 / 0.04));
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+}
+
+:root[data-mood='night'] .win__titlebar {
+  background: linear-gradient(to bottom, rgb(255 255 255 / 0.05), transparent);
+}
+
+.win__controls {
+  display: flex;
+  align-items: center;
+}
+
+.win__ctl {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  color: var(--ctl-glyph);
+}
+
+.win__ctl::before {
+  content: '';
+  position: absolute;
+  inset: 5.5px;
+  border-radius: 50%;
+  background: var(--ctl-close);
+  box-shadow:
+    inset 0 0 0 0.5px rgb(59 37 89 / 0.16),
+    inset 0 1px 1px rgb(255 255 255 / 0.55),
+    0 1px 2px rgb(59 37 89 / 0.12);
+  transition:
+    transform var(--dur-2) var(--ease-spring),
+    opacity var(--dur-2) var(--ease-out),
+    filter var(--dur-2) var(--ease-out);
+}
+
+.win__ctl--min::before {
+  background: var(--ctl-min);
+}
+
+.win__ctl--max::before {
+  background: var(--ctl-max);
+}
+
+.win__ctl svg {
+  position: relative;
+  opacity: 0;
+  transition: opacity var(--dur-1) var(--ease-out);
+}
+
+.win__controls:hover .win__ctl svg,
+.win__ctl:focus-visible svg {
+  opacity: 1;
+}
+
+.win__controls:hover .win__ctl::before {
+  transform: scale(1.08);
+}
+
+.win__ctl:active::before {
+  transform: scale(0.86) !important;
+  filter: brightness(0.92);
+}
+
+.win__ctl:focus-visible {
+  border-radius: 50%;
+  box-shadow: none;
+}
+
+.win__ctl:focus-visible::before {
+  box-shadow:
+    0 0 0 2px var(--surface-strong),
+    0 0 0 4px var(--accent);
+}
+
+.win:not(.is-focused) .win__ctl::before {
+  opacity: 0.42;
+  filter: saturate(0.5);
+}
+
+.win:not(.is-focused) .win__controls:hover .win__ctl::before {
+  opacity: 1;
+  filter: none;
+}
+
+.win__title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.win__title-icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  transition: opacity var(--dur-3) var(--ease-out);
+}
+
+.win__title-text {
+  min-width: 0;
+  overflow: hidden;
+  font-family: var(--font-display);
+  font-variation-settings: var(--display-axes);
+  font-size: 15.5px;
+  font-weight: 580;
+  line-height: 1.2;
+  letter-spacing: -0.005em;
+  color: var(--ink);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  transition: color var(--dur-3) var(--ease-out);
+}
+
+.win:not(.is-focused) .win__title-text {
+  color: var(--ink-3);
+}
+
+.win:not(.is-focused) .win__title-icon {
+  opacity: 0.55;
+}
+
+/* ── body ───────────────────────────────────────────────────────── */
+
+.win__body {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+  container-type: inline-size;
+}
+
+/* ── chromeless (welcome card) ──────────────────────────────────── */
+
+.win--chromeless .win__frame,
+.win--chromeless.is-focused .win__frame,
+.win--chromeless:focus-visible .win__frame {
+  overflow: visible;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.win--chromeless .win__body {
+  overflow: visible;
+}
+
+.win__float-close {
+  position: absolute;
+  top: -12px;
+  right: -12px;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  color: var(--ink-2);
+  background: var(--surface-strong);
+  border: 1px solid var(--border);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  backdrop-filter: blur(16px) saturate(160%);
+  box-shadow: var(--shadow-md);
+  transition:
+    transform var(--dur-3) var(--ease-spring),
+    color var(--dur-2) var(--ease-out),
+    background-color var(--dur-2) var(--ease-out);
+}
+
+.win__float-close:hover {
+  color: var(--on-accent);
+  background: var(--accent);
+  transform: rotate(90deg) scale(1.06);
+}
+
+.win__float-close:active {
+  transform: rotate(90deg) scale(0.92);
+}
+
+.win__float-close:focus-visible {
+  border-radius: 50%;
+}
+
+/* ── resize handles ─────────────────────────────────────────────── */
+
+.win__rz {
+  position: absolute;
+  z-index: 4;
+  touch-action: none;
+}
+
+.win__rz--n,
+.win__rz--s {
+  left: 16px;
+  right: 16px;
+  height: 10px;
+  cursor: ns-resize;
+}
+
+.win__rz--n {
+  top: -5px;
+}
+
+.win__rz--s {
+  bottom: -5px;
+}
+
+.win__rz--e,
+.win__rz--w {
+  top: 16px;
+  bottom: 16px;
+  width: 10px;
+  cursor: ew-resize;
+}
+
+.win__rz--e {
+  right: -5px;
+}
+
+.win__rz--w {
+  left: -5px;
+}
+
+.win__rz--ne,
+.win__rz--nw,
+.win__rz--se,
+.win__rz--sw {
+  width: 20px;
+  height: 20px;
+}
+
+.win__rz--ne {
+  top: -6px;
+  right: -6px;
+  cursor: nesw-resize;
+}
+
+.win__rz--sw {
+  bottom: -6px;
+  left: -6px;
+  cursor: nesw-resize;
+}
+
+.win__rz--nw {
+  top: -6px;
+  left: -6px;
+  width: 14px;
+  height: 14px;
+  cursor: nwse-resize;
+}
+
+.win__rz--se {
+  bottom: -6px;
+  right: -6px;
+  cursor: nwse-resize;
+}
+
+/* while dragging / resizing: no text selection, iframes can't steal the pointer */
+html.is-window-dragging,
+html.is-window-dragging * {
+  user-select: none !important;
+  -webkit-user-select: none !important;
+}
+
+html.is-window-resizing,
+html.is-window-resizing * {
+  user-select: none !important;
+  -webkit-user-select: none !important;
+}
+
+html.is-window-dragging iframe,
+html.is-window-resizing iframe {
+  pointer-events: none;
+}
+
+html.is-window-resizing[data-resize-edge='n'],
+html.is-window-resizing[data-resize-edge='s'] {
+  cursor: ns-resize;
+}
+
+html.is-window-resizing[data-resize-edge='e'],
+html.is-window-resizing[data-resize-edge='w'] {
+  cursor: ew-resize;
+}
+
+html.is-window-resizing[data-resize-edge='ne'],
+html.is-window-resizing[data-resize-edge='sw'] {
+  cursor: nesw-resize;
+}
+
+html.is-window-resizing[data-resize-edge='nw'],
+html.is-window-resizing[data-resize-edge='se'] {
+  cursor: nwse-resize;
+}
+
+@media (pointer: coarse) {
+  .win__ctl {
+    width: 32px;
+    height: 32px;
+  }
+
+  .win__ctl::before {
+    inset: 9px;
+  }
+
+  .win__titlebar {
+    grid-template-columns: 110px minmax(0, 1fr) 110px;
+  }
+}

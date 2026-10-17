@@ -1,0 +1,160 @@
+/* The desktop's photo stack (PhotoStack.tsx): a little pile of polaroids, scrapbook style.
+   The box is 214 × 240 (deskDecor's STACK): the pile, then the row under it. */
+
+.pstack {
+  position: relative;
+  width: 214px;
+  height: 240px;
+  pointer-events: none;
+  animation: pstack-in 900ms var(--ease-spring) 520ms both;
+}
+
+@keyframes pstack-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 18px, 0) rotate(3deg);
+  }
+}
+
+.pstack__pile {
+  position: relative;
+  height: 200px;
+}
+
+.pstack__card {
+  position: absolute;
+  left: 15px;
+  top: 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 184px;
+  padding: 9px 9px 0;
+  border: 0;
+  border-radius: 5px;
+  color: var(--plum-800);
+  background: #fffdf8;
+  --pstack-lift:
+    0 1px 2px rgb(42 24 66 / 0.14),
+    0 16px 28px -14px rgb(42 24 66 / 0.42);
+  box-shadow: var(--pstack-lift);
+  font: inherit;
+  text-align: center;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.pstack__card:not([data-top]) {
+  cursor: default;
+}
+
+/* the focus ring on top of the polaroid's own shadow, in every mood (it outranks the global ring) */
+.pstack .pstack__card:focus-visible {
+  box-shadow: var(--focus-ring), var(--pstack-lift);
+}
+
+/* the top polaroid lifts a little under the pointer (on the photo, so motion's transform on the card stays its own) */
+.pstack__photo {
+  display: block;
+  width: 166px;
+  height: 124px;
+  overflow: hidden;
+  border-radius: 2px;
+  background: linear-gradient(135deg, var(--lavender-200), var(--peach-200));
+  transition: filter var(--dur-2, 200ms) var(--ease-out);
+}
+
+.pstack__card[data-top]:hover .pstack__photo {
+  filter: brightness(1.05) saturate(1.06);
+}
+
+.pstack__cap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 40px;
+}
+
+/* one line in the middle of the strip, or a long title on two. The side padding lives on the clipped
+   box itself, so Caveat's slanted last letter has room to draw */
+.pstack__cap > span {
+  display: -webkit-box;
+  padding-inline: 4px;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  font-size: 18px;
+  line-height: 1;
+  text-wrap: balance;
+}
+
+:root[data-mood='night'] .pstack__card {
+  filter: brightness(0.9) saturate(0.95);
+  --pstack-lift:
+    0 2px 4px rgb(0 0 0 / 0.28),
+    0 18px 32px -14px rgb(0 0 0 / 0.6);
+}
+
+.pstack__row {
+  position: absolute;
+  inset: auto 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  height: 32px;
+  padding: 0 4px 0 10px;
+}
+
+.pstack__label {
+  font-size: 19px;
+  color: var(--ink-2);
+  text-shadow:
+    0 0 6px var(--surface-strong),
+    0 0 2px var(--surface-strong);
+}
+
+.pstack__btns {
+  display: flex;
+  gap: 6px;
+}
+
+.pstack__btn {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  color: var(--ink);
+  background: var(--surface);
+  box-shadow:
+    var(--shadow-sm),
+    inset 0 0 0 1px var(--border);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  pointer-events: auto;
+  cursor: pointer;
+  transition:
+    background var(--dur-2, 200ms) var(--ease-out),
+    transform var(--dur-2, 200ms) var(--ease-out);
+}
+
+.pstack__btn:hover {
+  background: var(--surface-strong);
+  transform: translateY(-1px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pstack {
+    animation: none;
+  }
+
+  .pstack__btn,
+  .pstack__btn:hover {
+    transition: none;
+    transform: none;
+  }
+}

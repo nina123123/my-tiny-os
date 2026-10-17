@@ -1,0 +1,123 @@
+/* Generated dreamy cover art — see CoverArt.tsx */
+
+.cover {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  isolation: isolate;
+  container-type: inline-size;
+  background: var(--surface-sunken);
+}
+
+.cover__art {
+  position: absolute;
+  inset: 0;
+  display: block;
+  background-color: #f3ecff;
+}
+
+/* fine film grain (static) */
+.cover__art::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 0 0 0 1.1 -.2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 160px 160px;
+  mix-blend-mode: soft-light;
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+/* the frosted emoji bubble */
+.cover__bubble {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  translate: -50% -50%;
+  height: clamp(22px, min(44%, 40cqi), 136px);
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  container-type: size;
+  background:
+    radial-gradient(120% 120% at 30% 18%, rgb(255 255 255 / 0.78), rgb(255 255 255 / 0.32) 55%, rgb(255 255 255 / 0.2) 100%);
+  box-shadow:
+    inset 0 1px 1px rgb(255 255 255 / 0.95),
+    inset 0 -8px 16px -10px rgb(59 37 89 / 0.22),
+    0 0 0 1px rgb(255 255 255 / 0.5),
+    0 12px 28px -12px rgb(59 37 89 / 0.38);
+  -webkit-backdrop-filter: blur(6px) saturate(140%);
+  backdrop-filter: blur(6px) saturate(140%);
+}
+
+.cover__emoji {
+  display: block;
+  font-size: 22px;
+  font-size: 50cqh;
+  line-height: 1;
+  font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', var(--font-body);
+  filter: drop-shadow(0 2px 3px rgb(59 37 89 / 0.18));
+  user-select: none;
+}
+
+/* variant="emoji": big emoji floating without the bubble */
+.cover__float {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  translate: -50% -50%;
+  height: clamp(24px, min(52%, 46cqi), 160px);
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  container-type: size;
+}
+
+.cover__float .cover__emoji {
+  font-size: 70cqh;
+  filter: drop-shadow(0 8px 12px rgb(59 37 89 / 0.22));
+}
+
+/* photo covers: the generated art is the placeholder underneath */
+.cover--photo .cover__bubble,
+.cover--photo .cover__float {
+  opacity: 0;
+}
+
+.cover--photo[data-state='error'] .cover__bubble,
+.cover--photo[data-state='error'] .cover__float {
+  opacity: 1;
+}
+
+.cover__img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 420ms var(--ease-out);
+}
+
+.cover--photo[data-state='loaded'] .cover__img {
+  opacity: 1;
+}
+
+.cover--photo[data-state='error'] .cover__img {
+  visibility: hidden;
+}
+
+:root[data-mood='night'] .cover__art {
+  filter: saturate(1.05) brightness(0.94);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cover__img {
+    transition: none;
+  }
+}

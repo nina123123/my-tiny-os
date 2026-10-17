@@ -1,0 +1,293 @@
+@import '@fontsource-variable/fraunces/full.css';
+@import '@fontsource-variable/fraunces/full-italic.css';
+@import '@fontsource-variable/dm-sans/index.css';
+@import '@fontsource/caveat/500.css';
+@import '@fontsource/caveat/700.css';
+@import '@fontsource/dm-mono/400.css';
+@import '@fontsource/dm-mono/500.css';
+@import './tokens.css';
+
+/* ── reset ─────────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  background: var(--bg);
+  background-image: var(--bg-grad);
+  background-attachment: fixed;
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: 1.55;
+  font-optical-sizing: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden; /* the OS is a full-viewport app; scrolling happens inside windows/sheets */
+  overscroll-behavior: none;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color var(--dur-4) var(--ease-out),
+    color var(--dur-4) var(--ease-out);
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+a {
+  color: var(--accent-ink);
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 3px;
+}
+
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  overflow-wrap: break-word;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  font-variation-settings: var(--display-axes);
+  font-weight: 560;
+  line-height: 1.12;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+::selection {
+  background: var(--accent-soft);
+  color: inherit;
+}
+
+:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+  border-radius: var(--r-sm);
+}
+
+/* thin pastel scrollbars inside windows */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(140 122 168 / 0.45) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: rgb(140 122 168 / 0.4);
+  border-radius: 999px;
+  border: 3px solid transparent;
+  background-clip: padding-box;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* ── utilities shared by every module ──────────────────────────── */
+
+/* Frosted glass panel. Pair with a radius. */
+.glass {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass {
+    background: var(--surface-solid);
+  }
+}
+
+.sr-only {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Scroll reveal — driven by <Reveal> (src/components/Reveal.tsx) */
+.reveal {
+  opacity: 0;
+  transform: translate3d(0, var(--reveal-y, 18px), 0) scale(var(--reveal-scale, 1));
+  filter: blur(var(--reveal-blur, 6px));
+  transition:
+    opacity 700ms var(--ease-out),
+    transform 800ms var(--ease-out),
+    filter 700ms var(--ease-out);
+  transition-delay: var(--reveal-delay, 0ms);
+  will-change: opacity, transform;
+}
+
+.reveal[data-revealed='true'] {
+  opacity: 1;
+  transform: none;
+  filter: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    transform: none;
+    filter: none;
+    transition: opacity 200ms linear;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Generic pill button in the OS style. Variants: .btn--accent, .btn--ghost */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-2);
+  height: 40px;
+  padding: 0 var(--s-5);
+  border-radius: var(--r-pill);
+  font-weight: 600;
+  font-size: var(--text-sm);
+  letter-spacing: 0.01em;
+  background: var(--surface-strong);
+  color: var(--ink);
+  box-shadow: var(--shadow-sm);
+  transition:
+    transform var(--dur-2) var(--ease-spring),
+    background-color var(--dur-2) var(--ease-out),
+    box-shadow var(--dur-2) var(--ease-out);
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.btn:active {
+  transform: translateY(0) scale(0.97);
+}
+
+.btn--accent {
+  background: var(--accent);
+  color: var(--on-accent);
+  box-shadow:
+    0 6px 18px -6px var(--accent-glow),
+    var(--shadow-sm);
+}
+
+.btn--accent:hover {
+  background: var(--accent-hover);
+}
+
+.btn--ghost {
+  background: transparent;
+  box-shadow: none;
+}
+
+.btn--ghost:hover {
+  background: var(--surface-hover);
+  box-shadow: none;
+}
+
+/* Small uppercase mono label, e.g. section kickers and OS metadata */
+.kicker {
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+/* Handwritten accent text (sticky notes, doodle annotations) */
+.hand {
+  font-family: var(--font-hand);
+  font-weight: 600;
+  line-height: 1.15;
+}
+
+/*
+ * Keep the focus ring visible on buttons and links that carry their own
+ * elevation shadow (.btn, chips, pills…): a plain `box-shadow` in a component
+ * rule would otherwise silently replace the :focus-visible ring above.
+ * Components that draw their ring elsewhere still win with their own
+ * `.thing:focus-visible` rule.
+ */
+:is(button, a[href], summary, [role='button']):focus-visible {
+  box-shadow: var(--focus-ring);
+}
+
+/*
+ * Windows High Contrast / forced colors strips box-shadows, so the
+ * --focus-ring above vanishes there. Draw a real outline in the system
+ * highlight colour instead; !important beats the many component rules
+ * that set `outline: none`.
+ */
+@media (forced-colors: active) {
+  :focus-visible {
+    outline: 2px solid Highlight !important;
+    outline-offset: 2px !important;
+  }
+}

@@ -1,0 +1,744 @@
+/* ── Guestbook ──────────────────────────────────────────────────────────────
+ * Notes are pastel paper in fixed palette colors with plum ink, so they read
+ * the same in every mood (papers are only dimmed a touch at night).
+ */
+
+.gb {
+  --gb-cta: linear-gradient(to bottom, var(--coral-400), var(--accent));
+  --gb-cta-ink: var(--on-accent);
+  --gb-cta-glow: var(--accent-glow);
+  --paper-ink: var(--plum-800);
+  --paper-ink-2: rgb(59 37 89 / 0.78);
+  position: relative;
+  height: 100%;
+  min-height: 0;
+  background: transparent;
+  color: var(--ink);
+  container-type: inline-size;
+}
+
+:root[data-mood='night'] .gb {
+  --gb-cta: linear-gradient(to bottom, var(--coral-300), var(--accent));
+}
+
+/* paper colors, shared by notes, the form paper and the swatches */
+.gb [data-color='lavender'] {
+  --paper: var(--lavender-200);
+  --paper-2: var(--lavender-100);
+  --paper-edge: var(--lavender-400);
+  --tape: var(--peach-300);
+}
+.gb [data-color='peach'] {
+  --paper: var(--peach-200);
+  --paper-2: var(--peach-100);
+  --paper-edge: var(--peach-400);
+  --tape: var(--lavender-300);
+}
+.gb [data-color='butter'] {
+  --paper: var(--butter-200);
+  --paper-2: var(--butter-100);
+  --paper-edge: var(--butter-400);
+  --tape: var(--pink-300);
+}
+.gb [data-color='mint'] {
+  --paper: var(--mint-200);
+  --paper-2: #effbf5;
+  --paper-edge: var(--mint-400);
+  --tape: var(--butter-300);
+}
+.gb [data-color='sky'] {
+  --paper: var(--sky-200);
+  --paper-2: #f0f7ff;
+  --paper-edge: var(--sky-300);
+  --tape: var(--coral-200);
+}
+.gb [data-color='pink'] {
+  --paper: var(--pink-200);
+  --paper-2: #fff0f6;
+  --paper-edge: var(--pink-300);
+  --tape: var(--mint-300);
+}
+
+.gb__scroll {
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  padding: var(--s-6) var(--s-5) var(--s-10);
+}
+
+/* ── hero ───────────────────────────────────────────────────────────────── */
+
+.gb__hero .kicker {
+  color: var(--ink-2);
+}
+
+.gb__title {
+  margin-top: var(--s-2);
+  font-size: clamp(26px, 7.4cqi, 38px);
+  font-weight: 600;
+}
+
+.gb__title em {
+  font-style: italic;
+  color: var(--accent-ink);
+}
+
+.gb__lede {
+  margin-top: var(--s-2);
+  max-width: 44ch;
+  color: var(--ink-2);
+}
+
+.gb__peek {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  /* a full 44px touch target that keeps its old footprint in the hero */
+  min-height: 44px;
+  margin-block: calc(var(--s-2) - 6px) -6px;
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--accent-ink);
+  border-radius: var(--r-pill);
+}
+
+.gb__peek span {
+  display: inline-block;
+  transition: transform var(--dur-3) var(--ease-spring);
+}
+
+.gb__peek:hover span {
+  transform: translateY(3px);
+}
+
+@container (min-width: 760px) {
+  .gb__peek {
+    display: none;
+  }
+}
+
+.gb__demo {
+  display: flex;
+  width: fit-content;
+  align-items: center;
+  gap: var(--s-2);
+  margin-top: var(--s-4);
+  padding: 7px 14px;
+  border-radius: var(--r-lg);
+  border: 1.5px dashed rgb(59 37 89 / 0.22);
+  background: color-mix(in oklab, var(--butter-200) 82%, transparent);
+  color: var(--plum-800);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+/* ── layout ─────────────────────────────────────────────────────────────── */
+
+.gb__layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s-8);
+  margin-top: var(--s-6);
+}
+
+@container (min-width: 760px) {
+  .gb__scroll {
+    padding: var(--s-8);
+  }
+
+  .gb__layout {
+    grid-template-columns: minmax(300px, 340px) minmax(0, 1fr);
+    align-items: start;
+    gap: var(--s-10);
+  }
+
+  .gb__form {
+    position: sticky;
+    top: 0;
+  }
+}
+
+/* ── the form ───────────────────────────────────────────────────────────── */
+
+.gb__form,
+.gb__wall-wrap {
+  min-width: 0;
+}
+
+.gb__form-title {
+  font-size: var(--text-lg);
+  font-weight: 600;
+  margin-bottom: var(--s-4);
+}
+
+.gb__paper {
+  position: relative;
+  padding: 16px 18px 10px;
+  border-radius: 5px 5px 20px 5px;
+  background: linear-gradient(165deg, var(--paper-2), var(--paper));
+  color: var(--paper-ink);
+  box-shadow:
+    0 1px 1px rgb(59 37 89 / 0.08),
+    0 16px 30px -16px rgb(59 37 89 / 0.42);
+  rotate: -0.7deg;
+  transition: background-color var(--dur-3) var(--ease-out);
+}
+
+.gb__paper-sticker {
+  position: absolute;
+  top: -16px;
+  right: -8px;
+  font-size: 36px;
+  line-height: 1;
+  filter: drop-shadow(1.5px 0 0 #fff) drop-shadow(-1.5px 0 0 #fff) drop-shadow(0 1.5px 0 #fff) drop-shadow(0 -1.5px 0 #fff)
+    drop-shadow(0 4px 5px rgb(59 37 89 / 0.25));
+  pointer-events: none;
+}
+
+.gb__label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--paper-ink-2);
+  margin-bottom: 4px;
+}
+
+.gb__msg {
+  display: block;
+  width: 100%;
+  min-height: 112px;
+  padding: 0 4px;
+  border: 0;
+  border-radius: var(--r-xs);
+  resize: none;
+  field-sizing: content;
+  max-height: 260px;
+  background: repeating-linear-gradient(to bottom, transparent 0 27px, rgb(59 37 89 / 0.13) 27px 28px);
+  background-attachment: local;
+  color: var(--paper-ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 28px;
+  outline: none;
+}
+
+.gb__msg::placeholder,
+.gb__name::placeholder {
+  /* ≥ 4.5:1 on every paper color, day and night (the papers dim a touch at night) */
+  color: var(--paper-ink-2);
+}
+
+.gb__msg:focus-visible,
+.gb__name:focus-visible,
+.gb__msg:focus,
+.gb__name:focus {
+  box-shadow: 0 0 0 2px rgb(255 255 255 / 0.9), 0 0 0 4px var(--coral-500);
+}
+
+.gb__msg[aria-invalid],
+.gb__name[aria-invalid] {
+  box-shadow: 0 0 0 2px var(--coral-600);
+}
+
+.gb__paper-foot {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  margin-top: var(--s-2);
+  padding-top: var(--s-2);
+  border-top: 1.5px dashed rgb(59 37 89 / 0.2);
+}
+
+.gb__sign-label {
+  font-family: var(--font-hand);
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--paper-ink-2);
+}
+
+.gb__name {
+  flex: 1;
+  min-width: 0;
+  height: 44px;
+  padding: 0 6px;
+  border: 0;
+  border-radius: var(--r-xs);
+  background: transparent;
+  color: var(--paper-ink);
+  font-family: var(--font-hand);
+  font-size: 24px;
+  font-weight: 600;
+  outline: none;
+}
+
+.gb__counter {
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  color: var(--paper-ink-2);
+}
+
+.gb__counter[data-low] {
+  color: var(--coral-700);
+  font-weight: 500;
+}
+
+.gb__field-errors {
+  margin-top: var(--s-3);
+}
+
+.gb__error {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--accent-ink);
+}
+
+.gb__error::before {
+  content: '↳ ';
+}
+
+.gb__ok {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--ink);
+}
+
+/* pickers */
+.gb__pick {
+  margin-top: var(--s-5);
+  padding: 0;
+  border: 0;
+  min-inline-size: 0;
+}
+
+.gb__legend {
+  padding: 0;
+  margin-bottom: var(--s-2);
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+
+.gb__options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* stickers: two tidy rows of four on narrow sheets and in the side column,
+ * one row of eight when the form spans a roomier single column */
+.gb__options--stickers {
+  display: grid;
+  grid-template-columns: repeat(4, 44px);
+  gap: 8px 12px;
+}
+
+/* 320px phones: keep all six paper colors on one row */
+@container (max-width: 340px) {
+  .gb__options:not(.gb__options--stickers) {
+    gap: 2px;
+  }
+}
+
+@container (min-width: 420px) and (max-width: 759px) {
+  .gb__options--stickers {
+    grid-template-columns: repeat(8, 44px);
+    gap: 6px;
+  }
+}
+
+.gb__sticker-opt,
+.gb__color-opt {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  cursor: pointer;
+}
+
+.gb__radio {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.gb__sticker-face {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: var(--surface-strong);
+  box-shadow: var(--shadow-sm);
+  font-size: 22px;
+  line-height: 1;
+  pointer-events: none;
+  transition:
+    transform var(--dur-3) var(--ease-spring),
+    background-color var(--dur-2) var(--ease-out),
+    box-shadow var(--dur-2) var(--ease-out);
+}
+
+.gb__sticker-opt:hover .gb__sticker-face {
+  transform: translateY(-2px) rotate(-6deg);
+}
+
+.gb__radio:checked + .gb__sticker-face {
+  background: color-mix(in oklab, var(--accent) 14%, var(--surface-strong));
+  box-shadow:
+    0 0 0 2px var(--accent),
+    0 6px 14px -6px var(--accent-glow);
+  transform: scale(1.06) rotate(-4deg);
+}
+
+.gb__radio:focus-visible + .gb__sticker-face,
+.gb__radio:focus-visible + .gb__swatch {
+  box-shadow: var(--focus-ring);
+}
+
+.gb__swatch {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(150deg, var(--paper-2), var(--paper));
+  box-shadow:
+    inset 0 0 0 1.5px var(--paper-edge),
+    var(--shadow-sm);
+  color: var(--plum-800);
+  pointer-events: none;
+  transition: transform var(--dur-3) var(--ease-spring);
+}
+
+.gb__swatch svg {
+  opacity: 0;
+  transform: scale(0.4);
+  transition:
+    opacity var(--dur-2) var(--ease-out),
+    transform var(--dur-3) var(--ease-spring);
+}
+
+.gb__color-opt:hover .gb__swatch {
+  transform: scale(1.08);
+}
+
+.gb__radio:checked + .gb__swatch {
+  transform: scale(1.12);
+  box-shadow:
+    0 0 0 2px var(--surface-solid),
+    0 0 0 4px var(--paper-edge);
+}
+
+.gb__radio:checked + .gb__swatch svg {
+  opacity: 1;
+  transform: none;
+}
+
+/* honeypot */
+.gb__hp {
+  position: absolute;
+  left: -10000px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+/* submit */
+.gb__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-3) var(--s-4);
+  margin-top: var(--s-6);
+}
+
+.gb__submit {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  height: 48px;
+  padding: 0 var(--s-6);
+  border-radius: var(--r-pill);
+  background: var(--gb-cta);
+  color: var(--gb-cta-ink);
+  font-weight: 700;
+  font-size: var(--text-base);
+  box-shadow:
+    0 10px 22px -10px var(--gb-cta-glow),
+    inset 0 1px 0 rgb(255 255 255 / 0.25);
+  transition: transform var(--dur-3) var(--ease-spring);
+}
+
+.gb__submit:hover:not(:disabled) {
+  transform: translateY(-2px) rotate(-1deg);
+}
+
+.gb__submit:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.gb__submit:disabled {
+  cursor: progress;
+  opacity: 0.8;
+}
+
+.gb__submit:focus-visible {
+  border-radius: var(--r-pill);
+}
+
+.gb__spinner {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2.5px solid currentColor;
+  border-right-color: transparent;
+  animation: gb-spin 700ms linear infinite;
+}
+
+@keyframes gb-spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+.gb__feedback {
+  flex: 1 1 200px;
+  min-width: 0;
+}
+
+/* "notes are public and appear after approval…" */
+.gb__notice {
+  max-width: 46ch;
+  margin-top: var(--s-5);
+  padding-top: var(--s-3);
+  border-top: 1px dashed var(--hairline);
+  font-size: var(--text-xs);
+  line-height: 1.5;
+  color: var(--ink-2);
+}
+
+/* ── the wall ───────────────────────────────────────────────────────────── */
+
+.gb__wall-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s-3);
+  margin-bottom: var(--s-5);
+}
+
+.gb__wall-title {
+  font-size: var(--text-lg);
+  font-weight: 600;
+}
+
+.gb__wall-count {
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+
+.gb__wall {
+  /* masonry: 4px rows; each note spans its own height + 24px (see index.tsx) */
+  list-style: none;
+  margin: 0;
+  padding: 8px 6px 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  grid-auto-rows: 4px;
+  column-gap: var(--s-5);
+  align-items: start;
+}
+
+@container (min-width: 900px) {
+  .gb__wall {
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  }
+}
+
+.gb__note {
+  position: relative;
+  margin: 0;
+  padding: 18px 16px 12px;
+  border-radius: 4px 4px 16px 4px;
+  background: linear-gradient(170deg, var(--paper-2), var(--paper));
+  color: var(--paper-ink);
+  box-shadow:
+    0 1px 1px rgb(59 37 89 / 0.07),
+    0 12px 24px -14px rgb(59 37 89 / 0.4);
+  transform-origin: 50% 0%;
+}
+
+.gb__note[data-fresh] {
+  box-shadow:
+    0 0 0 2px color-mix(in oklab, var(--accent) 55%, transparent),
+    0 14px 30px -12px var(--accent-glow);
+}
+
+.gb__tape {
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  width: 54px;
+  height: 17px;
+  translate: -50% 0;
+  background: color-mix(in oklab, var(--tape) 75%, rgb(255 255 255 / 0.4));
+  opacity: 0.85;
+  box-shadow: 0 1px 2px rgb(59 37 89 / 0.12);
+  -webkit-mask: linear-gradient(90deg, transparent 0 2px, #000 2px calc(100% - 2px), transparent calc(100% - 2px));
+  mask: linear-gradient(90deg, transparent 0 2px, #000 2px calc(100% - 2px), transparent calc(100% - 2px));
+}
+
+.gb__note-sticker {
+  position: absolute;
+  top: -12px;
+  right: -8px;
+  font-size: 28px;
+  line-height: 1;
+  rotate: 12deg;
+  filter: drop-shadow(1.3px 0 0 #fff) drop-shadow(-1.3px 0 0 #fff) drop-shadow(0 1.3px 0 #fff) drop-shadow(0 -1.3px 0 #fff)
+    drop-shadow(0 3px 4px rgb(59 37 89 / 0.22));
+}
+
+.gb__note-msg {
+  font-size: var(--text-base);
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  text-wrap: pretty;
+}
+
+.gb__note-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 2px var(--s-2);
+  margin-top: var(--s-2);
+}
+
+.gb__note-name {
+  font-family: var(--font-hand);
+  font-size: 21px;
+  font-weight: 600;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.gb__note-time {
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  color: var(--paper-ink-2);
+  white-space: nowrap;
+}
+
+.gb__chip {
+  padding: 1px 8px 2px;
+  border-radius: var(--r-pill);
+  border: 1px dashed rgb(59 37 89 / 0.4);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--paper-ink-2);
+}
+
+:root[data-mood='night'] .gb__note,
+:root[data-mood='night'] .gb__paper,
+:root[data-mood='night'] .gb__swatch {
+  filter: brightness(0.94) saturate(0.95);
+}
+
+/* loading / error / empty */
+.gb__skeleton {
+  border-radius: 4px 4px 16px 4px;
+  background: var(--surface-strong);
+  animation: gb-pulse 1.2s var(--ease-in-out) infinite alternate;
+  animation-delay: calc(var(--i) * 120ms);
+}
+
+@keyframes gb-pulse {
+  from {
+    opacity: 0.45;
+  }
+  to {
+    opacity: 0.9;
+  }
+}
+
+.gb__state {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  padding: var(--s-8) var(--s-5);
+  border-radius: var(--r-lg);
+  background: var(--surface-strong);
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+}
+
+.gb__state--empty {
+  background: transparent;
+  box-shadow: none;
+  border: 2px dashed var(--hairline);
+}
+
+.gb__state-emoji {
+  font-size: 34px;
+  line-height: 1.2;
+}
+
+.gb__state-title {
+  font-family: var(--font-display);
+  font-variation-settings: var(--display-axes);
+  font-weight: 600;
+  font-size: var(--text-md);
+}
+
+.gb__state-body {
+  color: var(--ink-2);
+  font-size: var(--text-sm);
+}
+
+.gb__retry {
+  margin-top: var(--s-3);
+  height: 44px;
+  padding: 0 var(--s-5);
+  border-radius: var(--r-pill);
+  background: var(--surface-solid);
+  color: var(--accent-ink);
+  font-weight: 700;
+  box-shadow: var(--shadow-sm);
+}
+
+.gb__retry:focus-visible {
+  border-radius: var(--r-pill);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gb__sticker-opt:hover .gb__sticker-face,
+  .gb__submit:hover:not(:disabled),
+  .gb__color-opt:hover .gb__swatch {
+    transform: none;
+  }
+
+  .gb__skeleton {
+    animation: none;
+    opacity: 0.6;
+  }
+}

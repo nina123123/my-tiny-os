@@ -1,0 +1,122 @@
+/* Shared kit for the work apps (welcome / about / projects / project). Prefix: wk- */
+
+.wk-sticker {
+  display: inline-block;
+  flex: none;
+  pointer-events: none;
+  transform: rotate(var(--wk-tilt, 0deg));
+  filter: drop-shadow(0 3px 4px rgb(59 37 89 / 0.16)) drop-shadow(0 10px 14px rgb(59 37 89 / 0.1));
+}
+
+.wk-sticker svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+:root[data-mood='night'] .wk-sticker {
+  filter: drop-shadow(0 3px 5px rgb(0 0 0 / 0.35)) drop-shadow(0 0 14px rgb(255 160 150 / 0.12));
+}
+
+.wk-sticker--bob {
+  animation: wk-bob 6.4s var(--ease-in-out) var(--wk-delay, 0s) infinite;
+}
+
+@keyframes wk-bob {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(var(--wk-tilt, 0deg));
+  }
+  50% {
+    transform: translate3d(0, -7px, 0) rotate(calc(var(--wk-tilt, 0deg) + 6deg));
+  }
+}
+
+/* an emoji (profile.motif) as a sticker: a white die-cut edge drawn with drop-shadows */
+.wk-sticker--emoji {
+  display: inline-grid;
+  place-items: center;
+  line-height: 1;
+}
+
+.wk-sticker__emoji {
+  filter: drop-shadow(2px 0 0 #fff) drop-shadow(-2px 0 0 #fff) drop-shadow(0 2px 0 #fff) drop-shadow(0 -2px 0 #fff);
+}
+
+/* the motif highlight (MotifText): a soft coral marker swipe */
+.wk-motif {
+  color: var(--accent-ink);
+  background: linear-gradient(100deg, transparent 2%, var(--accent-soft) 6%, var(--accent-soft) 94%, transparent 98%) 0 62% / 100% 58% no-repeat;
+  border-radius: 4px;
+  padding: 0 0.12em;
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+/* drawn avatar fallback: dreamy gradient circle with an initial */
+.wk-drawn-avatar {
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  font-family: var(--font-display);
+  font-variation-settings: var(--display-axes);
+  font-style: italic;
+  font-weight: 600;
+  color: #fff;
+  text-shadow: 0 2px 10px rgb(201 58 44 / 0.35);
+  background:
+    radial-gradient(circle at 30% 25%, rgb(255 255 255 / 0.7), transparent 40%),
+    conic-gradient(from 200deg, var(--lavender-400), var(--peach-400), var(--butter-300), var(--coral-400), var(--lavender-400));
+}
+
+/* category chip (projects + project) */
+.wk-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 24px;
+  padding: 2px 10px 2px 8px;
+  border-radius: var(--r-pill);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--ink);
+  background: color-mix(in srgb, var(--chip, var(--lavender-300)) 26%, var(--surface-strong));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--chip, var(--lavender-300)) 45%, transparent);
+  white-space: nowrap;
+}
+
+.wk-chip__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--chip, var(--lavender-300));
+  box-shadow: 0 0 0 2px rgb(255 255 255 / 0.6);
+}
+
+:root[data-mood='night'] .wk-chip {
+  background: color-mix(in srgb, var(--chip, var(--lavender-300)) 22%, rgb(255 255 255 / 0.06));
+}
+
+:root[data-mood='night'] .wk-chip__dot {
+  box-shadow: none;
+}
+
+/* little "draft" sticker for placeholder content */
+.wk-draft {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 9px;
+  border-radius: 6px;
+  font-family: var(--font-hand);
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--plum-800);
+  background: var(--butter-300);
+  box-shadow:
+    0 0 0 2px #fff,
+    var(--shadow-sm);
+  transform: rotate(-6deg);
+}

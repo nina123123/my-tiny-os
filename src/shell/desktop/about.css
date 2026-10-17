@@ -1,0 +1,256 @@
+/* The "About {osName}" dialog (AboutDialog.tsx) */
+
+.aboutos {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-menu);
+  display: grid;
+  place-items: center;
+  padding: var(--s-6);
+}
+
+/* separate layer so the card's own glass can blur the page behind it */
+.aboutos__scrim {
+  position: absolute;
+  inset: 0;
+  background: rgb(59 37 89 / 0.1);
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+}
+
+:root[data-mood='night'] .aboutos__scrim {
+  background: rgb(10 6 24 / 0.35);
+}
+
+.aboutos__card {
+  position: relative;
+  width: min(372px, 100%);
+  max-height: calc(100vh - 48px);
+  overflow: auto;
+  padding: 30px 26px 22px;
+  border-radius: var(--r-xl);
+  text-align: center;
+  color: var(--ink);
+  background: var(--surface-strong);
+  border: 1px solid var(--border);
+  -webkit-backdrop-filter: blur(30px) saturate(180%);
+  backdrop-filter: blur(30px) saturate(180%);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.6),
+    var(--shadow-lg);
+  outline: none;
+}
+
+:root[data-mood='night'] .aboutos__card {
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.08),
+    var(--shadow-lg);
+}
+
+.aboutos__close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  color: var(--ink-2);
+  background: var(--surface-sunken);
+  transition:
+    transform var(--dur-3) var(--ease-spring),
+    background-color var(--dur-2) var(--ease-out),
+    color var(--dur-2) var(--ease-out);
+}
+
+.aboutos__close:hover {
+  color: var(--on-accent);
+  background: var(--accent);
+  transform: rotate(90deg);
+}
+
+.aboutos__close:focus-visible {
+  border-radius: 50%;
+}
+
+.aboutos__logo {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 112px;
+  height: 112px;
+  margin: 2px auto 6px;
+}
+
+.aboutos__logo > svg {
+  position: relative;
+  animation: aboutos-bob 5s var(--ease-in-out) infinite;
+}
+
+.aboutos__halo {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background:
+    radial-gradient(closest-side, var(--accent-glow), transparent 70%),
+    conic-gradient(from 0deg, var(--lavender-300), var(--peach-300), var(--butter-300), var(--mint-300), var(--lavender-300));
+  filter: blur(14px);
+  opacity: 0.7;
+  animation: aboutos-spin 14s linear infinite;
+}
+
+.aboutos__title {
+  font-size: var(--text-2xl);
+  font-weight: 640;
+  letter-spacing: -0.02em;
+}
+
+.aboutos__version {
+  margin-top: 4px;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.04em;
+  color: var(--ink-2);
+}
+
+.aboutos__blurb {
+  max-width: 30ch;
+  margin: 14px auto 0;
+  font-size: var(--text-sm);
+  line-height: 1.45;
+  color: var(--ink-2);
+}
+
+.aboutos__made {
+  margin-top: 16px;
+  font-size: 20px;
+  color: var(--ink-2);
+}
+
+.aboutos__heart {
+  display: inline-block;
+  color: var(--accent);
+  animation: aboutos-beat 1.6s var(--ease-in-out) infinite;
+}
+
+@keyframes aboutos-spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+@keyframes aboutos-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes aboutos-beat {
+  0%,
+  60%,
+  100% {
+    transform: scale(1);
+  }
+  30% {
+    transform: scale(1.22);
+  }
+}
+
+/* privacy note: a quiet fold under the blurb */
+.aboutos__privacy {
+  margin-top: 18px;
+  border-radius: var(--r-lg);
+  background: var(--surface-sunken);
+  text-align: left;
+}
+
+.aboutos__psum {
+  display: grid;
+  grid-template-columns: auto auto 1fr auto;
+  align-items: center;
+  column-gap: 8px;
+  min-height: 44px;
+  padding: 8px 14px;
+  border-radius: var(--r-lg);
+  cursor: pointer;
+  list-style: none;
+}
+
+.aboutos__psum::-webkit-details-marker {
+  display: none;
+}
+
+.aboutos__pic {
+  font-size: 13px;
+  line-height: 1;
+}
+
+.aboutos__ptitle {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  color: var(--ink-2);
+}
+
+.aboutos__phint {
+  min-width: 0;
+  font-family: var(--font-hand);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.1;
+  color: var(--ink-2);
+  text-align: right;
+}
+
+.aboutos__chev {
+  width: 7px;
+  height: 7px;
+  margin: 0 2px 3px 2px;
+  border-right: 1.5px solid var(--ink-2);
+  border-bottom: 1.5px solid var(--ink-2);
+  transform: rotate(45deg);
+  transition: transform var(--dur-3) var(--ease-spring);
+}
+
+.aboutos__privacy[open] .aboutos__chev {
+  margin-bottom: -3px;
+  transform: rotate(-135deg);
+}
+
+.aboutos__plist {
+  display: grid;
+  gap: 7px;
+  margin: 0;
+  padding: 2px 14px 14px;
+  list-style: none;
+  font-size: var(--text-sm);
+  line-height: 1.4;
+  color: var(--ink-2);
+}
+
+.aboutos__plist li {
+  display: grid;
+  grid-template-columns: 20px 1fr;
+  gap: 6px;
+}
+
+.aboutos__plist li > span:first-child {
+  font-size: 12px;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.aboutos__plist b {
+  font-weight: 650;
+  color: var(--ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aboutos__chev {
+    transition: none;
+  }
+}

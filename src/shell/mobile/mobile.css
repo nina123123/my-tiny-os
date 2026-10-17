@@ -1,0 +1,1464 @@
+/*
+ * The mobile shell: status bar · home screen · sheet stack.
+ * Prefixes: .mshell .mstatus .mhome .mgreet .mwidget .msheet
+ */
+
+/* ── shell ─────────────────────────────────────────────────────── */
+.mshell {
+  --mshell-sb: calc(44px + env(safe-area-inset-top, 0px));
+  --mshell-scrim: rgb(59 37 89 / 0.2);
+  --mshell-glow: 0 1px 10px rgb(255 255 255 / 0.9), 0 0 2px rgb(255 255 255 / 0.7);
+  --mshell-wash: rgb(255 255 255 / 0.32);
+  --mhome-dock-space: 148px;
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+:root[data-mood='sunset'] .mshell {
+  --mshell-scrim: rgb(69 33 63 / 0.2);
+  --mshell-wash: rgb(255 246 240 / 0.3);
+}
+
+:root[data-mood='night'] .mshell {
+  --mshell-scrim: rgb(8 4 22 / 0.42);
+  --mshell-glow: 0 1px 12px rgb(26 18 48 / 0.85);
+  --mshell-wash: rgb(26 18 48 / 0.4);
+}
+
+/* ── status bar ────────────────────────────────────────────────── */
+.mstatus {
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: var(--z-menubar);
+  height: var(--mshell-sb);
+  padding: env(safe-area-inset-top, 0px) 6px 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  color: var(--ink);
+  pointer-events: none;
+}
+
+/* soft frosted fade so home content scrolling underneath stays out of the way */
+.mstatus::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 -18px;
+  z-index: -1;
+  background: linear-gradient(to bottom, var(--mshell-wash), transparent);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  -webkit-mask-image: linear-gradient(to bottom, #000 50%, transparent);
+  mask-image: linear-gradient(to bottom, #000 50%, transparent);
+  pointer-events: none;
+}
+
+.mstatus > * {
+  pointer-events: auto;
+}
+
+.mstatus__time {
+  justify-self: start;
+  padding-left: 14px;
+  font-size: 15px;
+  font-weight: 650;
+  letter-spacing: 0.01em;
+  font-variant-numeric: tabular-nums;
+  text-shadow: var(--mshell-glow);
+}
+
+.mstatus__center {
+  justify-self: center;
+  display: grid;
+  place-items: center;
+}
+
+.mstatus__center > * {
+  grid-area: 1 / 1;
+}
+
+.mstatus__done {
+  height: 44px;
+  padding: 0 2px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--r-pill);
+}
+
+.mstatus__donepill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  padding: 0 16px;
+  border-radius: var(--r-pill);
+  background: var(--accent);
+  color: var(--on-accent);
+  font-weight: 650;
+  font-size: 14.5px;
+  box-shadow:
+    0 6px 16px -6px var(--accent-glow),
+    var(--shadow-sm);
+}
+
+.mstatus__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 44px;
+  padding: 0 12px;
+  border-radius: var(--r-pill);
+  color: var(--ink);
+}
+
+.mstatus__logo {
+  display: grid;
+  place-items: center;
+  filter: drop-shadow(0 1px 4px var(--accent-glow));
+}
+
+.mstatus__word {
+  font-family: var(--font-display);
+  font-variation-settings: var(--display-axes);
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  text-shadow: var(--mshell-glow);
+}
+
+.mstatus__word span {
+  font-style: italic;
+  color: var(--accent-ink);
+}
+
+.mstatus__right {
+  justify-self: end;
+  display: flex;
+  align-items: center;
+}
+
+.mstatus__mood {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+}
+
+.mstatus__mood:focus-visible {
+  border-radius: 50%;
+}
+
+.mstatus__moodchip {
+  position: relative;
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--surface-strong);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--dur-2) var(--ease-spring);
+}
+
+.mstatus__mood:active .mstatus__moodchip {
+  transform: scale(0.88);
+}
+
+.mstatus__moodemoji {
+  grid-area: 1 / 1;
+  font-size: 15px;
+  line-height: 1;
+}
+
+.mstatus__battery {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0 10px 0 4px;
+  font-size: 12.5px;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  text-shadow: var(--mshell-glow);
+}
+
+.mstatus__cell {
+  position: relative;
+  width: 25px;
+  height: 12.5px;
+  padding: 1.5px;
+  border: 1.5px solid currentColor;
+  border-radius: 4.5px;
+  opacity: 0.92;
+}
+
+.mstatus__cell::after {
+  content: '';
+  position: absolute;
+  right: -4px;
+  top: 50%;
+  width: 2px;
+  height: 5px;
+  margin-top: -2.5px;
+  border-radius: 0 2px 2px 0;
+  background: currentColor;
+}
+
+.mstatus__fill {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--mint-400), var(--butter-400) 55%, var(--coral-400));
+  background-size: 200% 100%;
+  animation: mstatus-vibes 4s ease-in-out infinite alternate;
+}
+
+@keyframes mstatus-vibes {
+  to {
+    background-position: 100% 0;
+  }
+}
+
+/* The mood chip needs room beside the centred wordmark: below 450px the battery
+   keeps just its icon (its label still says 100%), and below 370px it steps aside. */
+@media (max-width: 449px) {
+  .mstatus__pct {
+    display: none;
+  }
+}
+
+@media (max-width: 369px) {
+  .mstatus__battery {
+    display: none;
+  }
+
+  .mstatus__brand {
+    padding: 0 6px;
+  }
+}
+
+/* ── home layer (pushed back while a sheet is open) ────────────── */
+.mhome-wrap {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.mhome {
+  position: absolute;
+  inset: 0;
+  transform-origin: 50% 46%;
+  transition:
+    transform 560ms var(--ease-out),
+    visibility 0s linear 0s;
+}
+
+/* Pushed back while a sheet is open; once the sheet has fully covered it, stop
+   painting the home screen (the glass then frosts the wallpaper only — cleaner and
+   cheaper). It reappears instantly on drag (.is-lifting) or close (attr removed). */
+.mhome-wrap[data-pushed] .mhome {
+  transform: scale(calc(0.92 + 0.08 * var(--lift, 0)));
+  visibility: hidden;
+  transition:
+    transform 560ms var(--ease-out),
+    visibility 0s linear 700ms;
+}
+
+.mhome-wrap[data-pushed].is-lifting .mhome {
+  visibility: visible;
+}
+
+.mhome__scrim {
+  position: absolute;
+  inset: 0;
+  background: var(--mshell-scrim);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 480ms var(--ease-out);
+}
+
+.mhome-wrap[data-pushed] .mhome__scrim {
+  opacity: calc(1 - var(--lift, 0));
+}
+
+.mhome-wrap.is-lifting .mhome,
+.mhome-wrap.is-lifting .mhome__scrim {
+  transition: none;
+}
+
+/* Ambient loops rest while the home screen is covered. */
+.mhome[data-paused] *,
+.mhome[data-paused] *::before,
+.mhome[data-paused] *::after {
+  animation-play-state: paused !important;
+}
+
+.mhome__scroll {
+  position: absolute;
+  inset: 0;
+  overflow: hidden auto;
+  overscroll-behavior: contain;
+  padding: calc(var(--mshell-sb) + 6px) 16px calc(var(--mhome-dock-space) + env(safe-area-inset-bottom, 0px));
+  /* keyboard focus scrolls things clear of the status bar and the dock */
+  scroll-padding: calc(var(--mshell-sb) + 6px) 0 calc(var(--mhome-dock-space) + env(safe-area-inset-bottom, 0px));
+  scrollbar-width: none;
+}
+
+.mhome__scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.mhome__inner {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* entrance after boot: cards rise, icons pop (staggered by --i) */
+.mhome [data-rise],
+.mhome [data-pop] {
+  opacity: 0;
+}
+
+.mhome[data-booted] [data-rise] {
+  animation: mhome-rise 820ms var(--ease-out) both;
+  animation-delay: calc(var(--i, 0) * 90ms + 60ms);
+}
+
+.mhome[data-booted] [data-pop] {
+  animation: mhome-pop 620ms var(--ease-spring) both;
+  animation-delay: calc(var(--i, 0) * 55ms + 160ms);
+}
+
+@keyframes mhome-rise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 22px, 0) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes mhome-pop {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 14px, 0) scale(0.45);
+  }
+  45% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ── greeting widget ───────────────────────────────────────────── */
+.mgreet {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-radius: var(--r-xl);
+  padding: 16px 18px 18px;
+  box-shadow: var(--shadow-lg);
+}
+
+.mgreet__blob {
+  position: absolute;
+  z-index: -1;
+  border-radius: 50%;
+  filter: blur(26px);
+  opacity: 0.55;
+  pointer-events: none;
+  animation: mgreet-float 16s ease-in-out infinite alternate;
+}
+
+.mgreet__blob--a {
+  width: 180px;
+  height: 180px;
+  right: -60px;
+  top: -70px;
+  background: var(--peach-300);
+}
+
+.mgreet__blob--b {
+  width: 160px;
+  height: 160px;
+  left: -70px;
+  bottom: -60px;
+  background: var(--lavender-300);
+  animation-duration: 19s;
+  animation-direction: alternate-reverse;
+}
+
+.mgreet__blob--c {
+  width: 90px;
+  height: 90px;
+  right: 22%;
+  bottom: -40px;
+  background: var(--coral-200);
+  opacity: 0.45;
+  animation-duration: 13s;
+}
+
+:root[data-mood='night'] .mgreet__blob {
+  opacity: 0.28;
+}
+
+@keyframes mgreet-float {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(-18px, 14px, 0) scale(1.12);
+  }
+}
+
+.mgreet__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.mgreet__hello {
+  display: grid;
+  gap: 4px;
+  padding-top: 4px;
+  min-width: 0;
+}
+
+.mgreet__kicker {
+  color: var(--ink-2);
+}
+
+.mgreet__note {
+  font-size: 21px;
+  color: var(--accent-ink);
+  transform: rotate(-2.5deg);
+  transform-origin: 0 50%;
+}
+
+/* avatar bubble */
+.mgreet__avatar {
+  position: relative;
+  flex: none;
+  width: 74px;
+  height: 74px;
+  margin: -2px -2px 0 0;
+  animation: mgreet-bob 6s ease-in-out infinite;
+}
+
+.mgreet__avatar img,
+.mgreet__orb {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow:
+    0 0 0 3px var(--surface-strong),
+    0 12px 26px -10px var(--accent-glow),
+    var(--shadow-md);
+}
+
+.mgreet__orb {
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 30% 26%, rgb(255 255 255 / 0.85) 0 6%, transparent 30%),
+    radial-gradient(circle at 70% 80%, var(--coral-400) 0%, transparent 55%),
+    conic-gradient(from 210deg, var(--lavender-400), var(--pink-300), var(--peach-300), var(--butter-300), var(--lavender-400));
+}
+
+.mgreet__initial {
+  font-family: var(--font-display);
+  font-variation-settings: var(--display-axes);
+  font-style: italic;
+  font-weight: 600;
+  font-size: 36px;
+  line-height: 1;
+  color: #fff;
+  text-shadow: 0 2px 10px rgb(94 71 130 / 0.45);
+  transform: translateY(1px);
+}
+
+.mgreet__sparkle {
+  position: absolute;
+  fill: var(--butter-300);
+  filter: drop-shadow(0 0 4px rgb(255 217 106 / 0.8));
+  animation: mgreet-twinkle 2.8s ease-in-out infinite;
+}
+
+.mgreet__sparkle--a {
+  width: 18px;
+  height: 18px;
+  left: -10px;
+  top: 4px;
+}
+
+.mgreet__sparkle--b {
+  width: 12px;
+  height: 12px;
+  right: -6px;
+  bottom: 2px;
+  fill: var(--coral-300);
+  filter: drop-shadow(0 0 4px var(--accent-glow));
+  animation-delay: -1.1s;
+}
+
+.mgreet__sparkle--c {
+  width: 9px;
+  height: 9px;
+  left: 6px;
+  bottom: -6px;
+  fill: var(--lavender-400);
+  animation-delay: -2s;
+}
+
+@keyframes mgreet-twinkle {
+  0%,
+  100% {
+    transform: scale(0.55) rotate(0deg);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1) rotate(25deg);
+    opacity: 1;
+  }
+}
+
+@keyframes mgreet-bob {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(-2deg);
+  }
+  50% {
+    transform: translate3d(0, -4px, 0) rotate(3deg);
+  }
+}
+
+.mgreet__title {
+  margin-top: 8px;
+  font-size: clamp(36px, 10.6vw, 44px);
+  font-weight: 560;
+  line-height: 1.02;
+  letter-spacing: -0.025em;
+}
+
+.mgreet__name {
+  font-style: italic;
+  font-weight: 600;
+  color: var(--accent-ink);
+  padding-right: 0.06em;
+}
+
+.mgreet__tagline {
+  margin-top: 8px;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  letter-spacing: 0.06em;
+  color: var(--ink-2);
+}
+
+.mgreet__said {
+  margin-top: 12px;
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  column-gap: 8px;
+  font-size: 16px;
+  color: var(--ink-2);
+}
+
+.mgreet__flip {
+  position: relative;
+  display: inline-grid;
+  perspective: 420px;
+  min-height: 1.3em;
+}
+
+.mgreet__word {
+  grid-area: 1 / 1; /* incoming + outgoing words share one cell while they flip */
+  justify-self: start;
+  position: relative;
+  display: inline-block;
+  font-family: var(--font-display);
+  font-variation-settings: var(--display-axes);
+  font-style: italic;
+  font-weight: 600;
+  font-size: 27px;
+  line-height: 1.15;
+  color: var(--accent-ink);
+  transform-origin: 50% 50% -10px;
+  backface-visibility: hidden;
+  white-space: nowrap;
+}
+
+/* hand-drawn squiggle under the word */
+.mgreet__word::after {
+  content: '';
+  position: absolute;
+  left: -2px;
+  right: -2px;
+  bottom: -5px;
+  height: 7px;
+  background: currentColor;
+  opacity: 0.55;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 7' preserveAspectRatio='none'%3E%3Cpath d='M1 4.5C6 1.5 9 6 14 3.5S22 1 27 4s9-1 12-1.5' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 7' preserveAspectRatio='none'%3E%3Cpath d='M1 4.5C6 1.5 9 6 14 3.5S22 1 27 4s9-1 12-1.5' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+}
+
+.mgreet__actions {
+  margin-top: 18px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* side by side when they fit (≥ ~380px phones), stacked full-width otherwise */
+.mgreet__actions .btn {
+  height: 46px;
+  padding: 0 12px;
+  font-size: 14.5px;
+  flex: 1 1 auto;
+  white-space: nowrap;
+}
+
+.mgreet__second {
+  background: var(--surface-strong);
+}
+
+.mgreet__cta {
+  color: var(--on-accent);
+}
+
+/* touch screens keep :hover after a tap; don't leave buttons lifted */
+@media (hover: none) {
+  .mgreet__actions .btn:hover {
+    transform: none;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .mgreet__actions .btn--accent:hover {
+    background: var(--accent);
+    box-shadow:
+      0 6px 18px -6px var(--accent-glow),
+      var(--shadow-sm);
+  }
+}
+
+.mgreet__arrow {
+  display: inline-block;
+  transition: transform var(--dur-2) var(--ease-spring);
+}
+
+.mgreet__cta:active .mgreet__arrow {
+  transform: translateX(4px);
+}
+
+/* ── small widgets ─────────────────────────────────────────────── */
+.mwidgets {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.mwidget {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  min-height: 164px;
+  padding: 14px;
+  border-radius: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  color: var(--ink);
+  box-shadow: var(--shadow-md);
+  transition: transform 380ms var(--ease-spring);
+}
+
+.mwidget:active {
+  transform: scale(0.96);
+  transition-duration: 120ms;
+}
+
+.mwidget:focus-visible {
+  border-radius: 24px;
+  box-shadow: var(--focus-ring), var(--shadow-md);
+}
+
+.mwidget__kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--ink-2);
+  font-weight: 500;
+}
+
+/* latest project: its cover as a little tilted photo in the corner */
+.mwidget--project {
+  background:
+    radial-gradient(110% 90% at 100% 0%, color-mix(in srgb, var(--peach-300) 40%, transparent), transparent 65%),
+    var(--surface);
+}
+
+.mwidget__art {
+  position: absolute;
+  z-index: -1;
+  top: 12px;
+  right: 12px;
+  width: 84px;
+  height: 84px;
+  overflow: hidden;
+  border-radius: 18px;
+  box-shadow:
+    0 0 0 3px rgb(255 255 255 / 0.85),
+    0 12px 22px -10px rgb(59 37 89 / 0.45);
+  transform: rotate(6deg);
+}
+
+.mwidget__track {
+  margin-top: auto;
+  display: grid;
+  max-width: 100%;
+  padding-right: 4px;
+}
+
+.mwidget__track .mwidget__kicker {
+  margin-bottom: 4px;
+}
+
+.mwidget__title {
+  font-family: var(--font-display);
+  font-variation-settings: var(--display-axes);
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.15;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.mwidget__sub {
+  font-size: 13px;
+  color: var(--ink-2);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* currently */
+.mwidget--now {
+  background:
+    radial-gradient(110% 80% at 0% 0%, color-mix(in srgb, var(--mint-300) 32%, transparent), transparent 65%),
+    var(--surface);
+}
+
+:root[data-mood='night'] .mwidget--now,
+:root[data-mood='night'] .mwidget--project {
+  background-blend-mode: soft-light, soft-light, normal;
+}
+
+.mwidget__pulse {
+  position: relative;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--mint-400);
+}
+
+.mwidget__pulse::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--mint-400);
+  animation: mwidget-ping 2.2s var(--ease-out) infinite;
+}
+
+@keyframes mwidget-ping {
+  from {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  to {
+    transform: scale(3);
+    opacity: 0;
+  }
+}
+
+.mwidget__list {
+  margin-top: 10px;
+  display: grid;
+  gap: 8px;
+  width: 100%;
+}
+
+.mwidget__item {
+  display: grid;
+  gap: 1px;
+  min-width: 0;
+}
+
+.mwidget__label2 {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent-ink);
+}
+
+.mwidget__value {
+  font-size: var(--mwidget-value, 13.5px);
+  font-weight: 600;
+  line-height: 1.25;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+@media (max-width: 379px) {
+  .mwidget {
+    --mwidget-value: 12.5px;
+    min-height: 150px;
+    padding: 13px;
+  }
+
+  .mwidget__list {
+    gap: 6px;
+  }
+
+  .mgreet__actions .btn {
+    font-size: 13.5px;
+    padding: 0 10px;
+  }
+}
+
+/* short phones: a little tighter so the app grid peeks above the dock */
+@media (max-height: 760px) {
+  .mhome__inner {
+    gap: 12px;
+  }
+
+  .mgreet__avatar {
+    width: 62px;
+    height: 62px;
+  }
+
+  .mgreet__title {
+    font-size: clamp(32px, 9.6vw, 40px);
+    margin-top: 4px;
+  }
+
+  .mgreet__said {
+    margin-top: 8px;
+  }
+
+  .mgreet__actions {
+    margin-top: 14px;
+  }
+
+  .mwidget {
+    min-height: 136px;
+  }
+
+  .mwidget__play {
+    width: 32px;
+    height: 32px;
+  }
+
+  /* two "currently" lines are plenty here (the widget's label still reads all three) */
+  .mwidget__item:nth-child(n + 3) {
+    display: none;
+  }
+}
+
+/* Phones inside a browser (Safari/Chrome toolbars leave ~550–700px): the app grid
+   moves up under the greeting so every app is visible without scrolling, and the
+   widgets follow below it as scroll content instead of hiding the icons under the dock. */
+@media (max-height: 700px) {
+  .mgreet {
+    order: 0;
+  }
+
+  .mhome__gridnav {
+    order: 1;
+  }
+
+  .mwidgets {
+    order: 2;
+  }
+
+  .mhome__fine {
+    order: 3;
+  }
+}
+
+/* ── app grid + dock icons ─────────────────────────────────────── */
+.mhome__grid,
+.mhome__dockgrid {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+/* fewer than 4 dock apps: keep them centered, each in a quarter-width column */
+.mhome__dockgrid:not(:has(> :nth-child(4))) {
+  grid-template-columns: repeat(auto-fit, minmax(0, 25%));
+  justify-content: center;
+}
+
+.mhome__grid {
+  row-gap: 14px;
+  padding-top: 4px;
+}
+
+.mhome__cell {
+  display: grid;
+  justify-items: center;
+}
+
+.mhome__app {
+  width: 100%;
+  max-width: 84px;
+  min-height: 44px;
+  padding: 4px 0 2px;
+  border-radius: 18px;
+  display: grid;
+  justify-items: center;
+  color: var(--ink);
+}
+
+.mhome__app:focus-visible {
+  box-shadow: none;
+}
+
+.mhome__wiggle {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  width: 100%;
+}
+
+.mhome__art {
+  display: block;
+  width: 60px;
+  height: 60px;
+  border-radius: var(--r-icon);
+  box-shadow: var(--shadow-md);
+  transition: transform 420ms var(--ease-spring);
+}
+
+.mhome__app[data-pressed] .mhome__art,
+.mhome__app:active .mhome__art {
+  transform: scale(0.9);
+  transition-duration: 110ms;
+  transition-timing-function: var(--ease-out);
+}
+
+.mhome__app:focus-visible .mhome__art {
+  box-shadow: var(--focus-ring), var(--shadow-md);
+}
+
+.mhome__label {
+  max-width: 100%;
+  padding: 0 2px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow: var(--mshell-glow);
+}
+
+/* the quiet "about & privacy" link at the end of the home screen */
+.mhome__fine {
+  display: flex;
+  justify-content: center;
+  margin-top: -4px;
+}
+
+.mhome__finebtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: var(--r-pill);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.04em;
+  color: var(--ink-2);
+  text-shadow: var(--mshell-glow);
+  transition: transform var(--dur-2) var(--ease-spring);
+}
+
+.mhome__finebtn > span {
+  font-size: 11px;
+  text-shadow: none;
+}
+
+.mhome__finebtn:active {
+  transform: scale(0.96);
+}
+
+:root[data-mood='night'] .mhome__finebtn {
+  color: var(--ink);
+}
+
+/* jiggle mode */
+.mhome[data-jiggle] .mhome__wiggle {
+  animation: mhome-jiggle 0.26s ease-in-out infinite alternate;
+  animation-delay: var(--jd, 0ms);
+}
+
+.mhome[data-jiggle] .mhome__cell:nth-child(even) .mhome__wiggle {
+  animation-duration: 0.3s;
+  animation-direction: alternate-reverse;
+}
+
+@keyframes mhome-jiggle {
+  from {
+    transform: rotate(-2.6deg) translate3d(0, 0.5px, 0);
+  }
+  to {
+    transform: rotate(2.6deg) translate3d(0, -0.5px, 0);
+  }
+}
+
+/* dock */
+.mhome__dock {
+  position: absolute;
+  z-index: 2;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  padding: 0 12px calc(env(safe-area-inset-bottom, 0px) + 8px);
+  pointer-events: none;
+}
+
+.mhome__dockbar {
+  pointer-events: auto;
+  width: min(100%, 480px);
+  padding: 9px 6px 7px;
+  border-radius: 32px;
+  box-shadow: var(--shadow-lg);
+}
+
+/* Our own home indicator, hidden where the phone draws a real one (safe-area inset > 0). */
+.mhome__indicator {
+  width: 134px;
+  height: max(0px, calc(5px - env(safe-area-inset-bottom, 0px) * 100));
+  border-radius: var(--r-pill);
+  background: var(--ink);
+  opacity: 0.3;
+}
+
+/* Phones held sideways: a compact dock (icons only) and a tighter greeting, so both
+   greeting buttons sit above the dock without scrolling. */
+@media (orientation: landscape) and (max-height: 500px) {
+  .mhome {
+    --mhome-dock-space: 96px;
+  }
+
+  /* two columns: the greeting on the left, the icons and widgets beside it, so
+     the grid icons (and their labels) sit well above the dock */
+  .mhome__inner {
+    max-width: 780px;
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+    column-gap: 16px;
+    row-gap: 12px;
+    align-items: start;
+  }
+
+  .mgreet {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+    padding: 12px 16px 14px;
+  }
+
+  .mhome__gridnav {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .mwidgets {
+    grid-column: 2;
+    grid-row: 2;
+  }
+
+  .mhome__fine {
+    grid-column: 1 / -1;
+  }
+
+  .mgreet__avatar {
+    width: 52px;
+    height: 52px;
+  }
+
+  .mgreet__title {
+    font-size: 34px;
+  }
+
+  .mgreet__tagline {
+    margin-top: 6px;
+  }
+
+  .mgreet__said {
+    margin-top: 6px;
+  }
+
+  .mgreet__word {
+    font-size: 22px;
+  }
+
+  .mgreet__actions {
+    margin-top: 12px;
+    gap: 6px;
+  }
+
+  /* a little tighter, so both buttons share one row in the narrower column */
+  .mgreet__actions .btn {
+    padding: 0 10px;
+    font-size: 14px;
+  }
+
+  .mhome__dock {
+    gap: 6px;
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 6px);
+  }
+
+  .mhome__dockbar {
+    padding: 5px 6px 4px;
+  }
+
+  .mhome__cell[data-variant='dock'] .mhome__app {
+    padding: 2px 0;
+  }
+
+  .mhome__cell[data-variant='dock'] .mhome__art {
+    width: 48px;
+    height: 48px;
+  }
+
+  .mhome__cell[data-variant='dock'] .mhome__art svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* visually hidden, still the button's accessible name */
+  .mhome__cell[data-variant='dock'] .mhome__label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
+/* ── sheets ────────────────────────────────────────────────────── */
+.msheet {
+  --push-y: calc(var(--mshell-sb) - 2px);
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  transform-origin: 50% 0;
+  transition: transform 560ms var(--ease-out);
+}
+
+.msheet[data-card] {
+  --push-y: -12px;
+  top: calc(var(--mshell-sb) + 10px);
+}
+
+.msheet[data-pushed] {
+  transform: translate3d(0, calc(var(--push-y) * (1 - var(--lift, 0))), 0) scale(calc(0.94 + 0.06 * var(--lift, 0)));
+}
+
+.msheet.is-lifting {
+  transition: none;
+}
+
+.msheet__panel {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  /* clip, not a scroll container: scrollIntoView() on a stray absolutely-positioned
+     child (a honeypot, an sr-only span) can't shift the whole sheet under the
+     status bar (Safari < 16 falls back to hidden) */
+  overflow: clip;
+  display: flex;
+  flex-direction: column;
+  pointer-events: auto;
+  transform-origin: 50% 50%;
+  /* heavier glass: surface-strong over surface reads like frosted milk glass */
+  background:
+    radial-gradient(120% 40% at 0% 0%, var(--accent-soft), transparent 70%),
+    radial-gradient(100% 36% at 100% 0%, color-mix(in srgb, var(--lavender-300) 26%, transparent), transparent 70%),
+    linear-gradient(var(--surface-strong), var(--surface-strong)),
+    var(--surface);
+  -webkit-backdrop-filter: blur(calc(var(--glass-blur) + 20px)) saturate(var(--glass-saturate));
+  backdrop-filter: blur(calc(var(--glass-blur) + 20px)) saturate(var(--glass-saturate));
+  box-shadow:
+    inset 0 1px 0 var(--border),
+    var(--shadow-lg);
+  will-change: transform;
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .msheet__panel {
+    background: var(--surface-solid);
+  }
+}
+
+/* A sheet pushed under a card is barely visible: render it as solid milk glass
+   (no nested backdrop blur → no streaks, and cheaper) with rounded top corners. */
+.msheet[data-pushed] .msheet__panel {
+  border-radius: 24px 24px 0 0 !important;
+  background:
+    radial-gradient(120% 40% at 0% 0%, var(--accent-soft), transparent 70%),
+    radial-gradient(100% 36% at 100% 0%, color-mix(in srgb, var(--lavender-300) 26%, transparent), transparent 70%),
+    var(--surface-solid);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  box-shadow:
+    inset 0 1px 0 var(--border),
+    0 -2px 18px -6px rgb(26 18 48 / 0.18);
+}
+
+/* …and once the card on top has settled, its content stops painting (the peek only
+   shows the panel's top edge). Back instantly on drag or when it becomes the top. */
+.msheet .msheet__content {
+  transition: visibility 0s linear 0s;
+}
+
+.msheet[data-pushed] .msheet__content {
+  visibility: hidden;
+  transition: visibility 0s linear 700ms;
+}
+
+.msheet[data-pushed].is-lifting .msheet__content {
+  visibility: visible;
+}
+
+.msheet[data-leaving] .msheet__panel {
+  pointer-events: none;
+}
+
+/* Opening: the panel still catches taps (a quick second tap on the icon must not
+   fall through to the home screen) but the app inside doesn't take them yet. */
+.msheet[data-opening] .msheet__content {
+  pointer-events: none;
+}
+
+.msheet__content {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.msheet__header {
+  flex: none;
+  position: relative;
+  padding: var(--mshell-sb) 10px 0;
+  touch-action: none;
+  border-bottom: 1px solid var(--hairline);
+}
+
+.msheet[data-card] .msheet__header {
+  padding-top: 0;
+}
+
+.msheet__grabber {
+  display: block;
+  width: 40px;
+  height: 5px;
+  margin: 6px auto 0;
+  border-radius: var(--r-pill);
+  background: var(--ink-3);
+  opacity: 0.55;
+  transition:
+    transform var(--dur-2) var(--ease-spring),
+    opacity var(--dur-2);
+}
+
+/* while dragged up a touch, a skirt keeps the bottom edge from showing a gap */
+.msheet[data-dragging] .msheet__panel {
+  box-shadow:
+    0 40px 0 0 var(--surface-solid),
+    inset 0 1px 0 var(--border);
+}
+
+.msheet[data-dragging] .msheet__grabber {
+  transform: scaleX(1.3);
+  opacity: 0.85;
+}
+
+.msheet__bar {
+  display: grid;
+  grid-template-columns: 84px minmax(0, 1fr) 84px;
+  align-items: center;
+  min-height: 50px;
+  padding-bottom: 2px;
+}
+
+.msheet__back {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 12px 0 10px;
+  border-radius: var(--r-pill);
+  color: var(--accent-ink);
+  font-size: 16px;
+  font-weight: 600;
+  transition:
+    background-color var(--dur-2) var(--ease-out),
+    transform var(--dur-2) var(--ease-spring);
+}
+
+.msheet__back:active {
+  background: var(--accent-soft);
+  transform: scale(0.95);
+}
+
+.msheet__back svg {
+  width: 9px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.msheet__title {
+  justify-self: center;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  max-width: 100%;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.15;
+  text-align: center;
+}
+
+.msheet__title:focus,
+.msheet__title:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+
+.msheet__titleicon {
+  flex: none;
+  display: block;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  box-shadow: var(--shadow-sm);
+}
+
+.msheet__titletext {
+  min-width: 0;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.msheet__body {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template: minmax(0, 1fr) / minmax(0, 1fr);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  /* the shell is non-selectable (long-press = jiggle); text inside apps stays selectable */
+  -webkit-user-select: text;
+  user-select: text;
+  -webkit-touch-callout: default;
+}
+
+.msheet__splash {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+
+.msheet__splashicon {
+  display: block;
+  width: 60px;
+  height: 60px;
+}
+
+.msheet__dim {
+  position: absolute;
+  inset: 0;
+  background: var(--mshell-scrim);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 480ms var(--ease-out);
+}
+
+.msheet[data-pushed] .msheet__dim {
+  opacity: calc(1 - var(--lift, 0));
+}
+
+.msheet.is-lifting .msheet__dim {
+  transition: none;
+}
+
+/* ── reduced motion: no big transforms, only quick fades ───────── */
+@media (prefers-reduced-motion: reduce) {
+  .mhome,
+  .msheet {
+    transition: none;
+  }
+
+  .mhome-wrap[data-pushed] .mhome,
+  .msheet[data-pushed] {
+    transform: none;
+  }
+
+  .mhome__scrim,
+  .msheet__dim {
+    transition-duration: 150ms;
+  }
+
+  .mgreet__blob,
+  .mgreet__avatar {
+    animation: none;
+  }
+}

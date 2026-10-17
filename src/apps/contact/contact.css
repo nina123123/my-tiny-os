@@ -1,0 +1,513 @@
+/* ── Contact: say hi 👋 ─────────────────────────────────────────────────── */
+
+.contact {
+  position: relative;
+  height: 100%;
+  min-height: 0;
+  background: transparent;
+  color: var(--ink);
+  container-type: inline-size;
+}
+
+.contact__scroll {
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  padding: var(--s-6) var(--s-6) var(--s-8);
+}
+
+.contact__scroll {
+  display: flex;
+  flex-direction: column;
+}
+
+/* centered vertically when there's room (phones), scrolls when there isn't */
+.contact__inner {
+  width: 100%;
+  max-width: 560px;
+  margin: auto;
+}
+
+/* ── hero ───────────────────────────────────────────────────────────────── */
+
+.contact__hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.contact__connect {
+  display: flex;
+  align-items: center;
+  margin-bottom: var(--s-4);
+}
+
+.contact__me,
+.contact__you {
+  flex: none;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+}
+
+.contact__me {
+  padding: 2.5px;
+  background: conic-gradient(from 200deg, var(--lavender-400), var(--peach-300), var(--butter-300), var(--coral-400), var(--lavender-400));
+  box-shadow: var(--shadow-sm);
+}
+
+.contact__me img,
+.contact__me > span {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--surface-solid);
+  display: grid;
+  place-items: center;
+  background: var(--peach-200);
+  color: var(--plum-800);
+  font-family: var(--font-display);
+  font-weight: 600;
+}
+
+.contact__you {
+  display: grid;
+  place-items: center;
+  border: 2px dashed color-mix(in oklab, var(--accent) 70%, transparent);
+  color: var(--accent-ink);
+  font-size: 22px;
+  rotate: -6deg;
+  background: var(--accent-soft);
+}
+
+.contact__thread {
+  position: relative;
+  width: clamp(28px, 9cqi, 52px);
+  height: 6px;
+  overflow: hidden;
+}
+
+.contact__thread::before {
+  content: '';
+  position: absolute;
+  inset: 0 -12px 0 -12px;
+  background: radial-gradient(circle, var(--ink-3) 1.4px, transparent 1.9px) 0 50% / 9px 6px repeat-x;
+  animation: contact-thread 1.4s linear infinite;
+}
+
+.contact__thread--rev::before {
+  animation-direction: reverse;
+}
+
+@keyframes contact-thread {
+  to {
+    transform: translateX(9px);
+  }
+}
+
+.contact__knot {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--surface-strong);
+  box-shadow: var(--shadow-sm);
+  font-size: 19px;
+  animation: contact-knot 3.2s var(--ease-in-out) infinite;
+}
+
+@keyframes contact-knot {
+  0%,
+  100% {
+    transform: rotate(-8deg) scale(1);
+  }
+  50% {
+    transform: rotate(8deg) scale(1.08);
+  }
+}
+
+.contact__title {
+  font-size: clamp(38px, 11cqi, 56px);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.contact__wave {
+  display: inline-block;
+  transform-origin: 70% 75%;
+  animation: contact-wave 2.4s var(--ease-in-out) 0.4s 2;
+}
+
+.contact__hero:hover .contact__wave {
+  animation: contact-wave 1.2s var(--ease-in-out) infinite;
+}
+
+@keyframes contact-wave {
+  0%,
+  60%,
+  100% {
+    transform: rotate(0deg);
+  }
+  10%,
+  30% {
+    transform: rotate(16deg);
+  }
+  20%,
+  40% {
+    transform: rotate(-8deg);
+  }
+  50% {
+    transform: rotate(10deg);
+  }
+}
+
+.contact__lede {
+  margin-top: var(--s-2);
+  font-size: var(--text-md);
+  color: var(--ink-2);
+}
+
+.contact__name {
+  margin-top: var(--s-3);
+  color: var(--ink-2);
+}
+
+/* ── link cards ─────────────────────────────────────────────────────────── */
+
+.contact__links {
+  list-style: none;
+  padding: 0;
+  margin-top: var(--s-6);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: var(--s-3);
+}
+
+.contact__card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  border-radius: var(--r-lg);
+  background: var(--surface-strong);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  transition:
+    transform var(--dur-3) var(--ease-spring),
+    box-shadow var(--dur-3) var(--ease-out);
+}
+
+.contact__card:not(.contact__card--soon):hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+}
+
+.contact__card:not(.contact__card--soon):active {
+  transform: scale(0.98);
+}
+
+.contact__hit {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 76px;
+  padding: 14px 16px 14px 14px;
+  color: inherit;
+  text-decoration: none;
+  border-radius: inherit;
+}
+
+.contact__hit:focus-visible {
+  border-radius: var(--r-lg);
+}
+
+.contact__emoji {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  font-size: 24px;
+  line-height: 1;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.7),
+    inset 0 -6px 12px -8px rgb(59 37 89 / 0.25),
+    0 6px 14px -8px rgb(59 37 89 / 0.35);
+  transition: transform var(--dur-3) var(--ease-spring);
+}
+
+.contact__emoji[data-tone='lavender'] {
+  background: linear-gradient(140deg, var(--lavender-100), var(--lavender-300));
+}
+.contact__emoji[data-tone='peach'] {
+  background: linear-gradient(140deg, var(--peach-100), var(--peach-300));
+}
+.contact__emoji[data-tone='butter'] {
+  background: linear-gradient(140deg, var(--butter-100), var(--butter-300));
+}
+.contact__emoji[data-tone='mint'] {
+  background: linear-gradient(140deg, #effbf5, var(--mint-300));
+}
+.contact__emoji[data-tone='sky'] {
+  background: linear-gradient(140deg, #f0f7ff, var(--sky-300));
+}
+.contact__emoji[data-tone='pink'] {
+  background: linear-gradient(140deg, #fff0f6, var(--pink-300));
+}
+
+.contact__card:hover .contact__emoji {
+  transform: rotate(-8deg) scale(1.07);
+}
+
+.contact__text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.contact__label {
+  font-weight: 700;
+  font-size: var(--text-md);
+  line-height: 1.25;
+}
+
+.contact__handle {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--ink-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.contact__go {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--surface-sunken);
+  color: var(--ink-2);
+  font-weight: 700;
+  transition:
+    transform var(--dur-3) var(--ease-spring),
+    background-color var(--dur-2) var(--ease-out),
+    color var(--dur-2) var(--ease-out);
+}
+
+.contact__card:hover .contact__go {
+  transform: translate(2px, -2px);
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+}
+
+.contact__copy {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin-right: 12px;
+  border-radius: 50%;
+  background: var(--surface-sunken);
+  color: var(--ink-2);
+  transition:
+    background-color var(--dur-2) var(--ease-out),
+    color var(--dur-2) var(--ease-out),
+    transform var(--dur-3) var(--ease-spring);
+}
+
+.contact__copy:hover {
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+}
+
+.contact__copy:active {
+  transform: scale(0.9);
+}
+
+.contact__copy:focus-visible {
+  border-radius: 50%;
+}
+
+/* placeholders: present, but softly "not yet" */
+.contact__card--soon {
+  gap: 14px;
+  min-height: 76px;
+  padding: 14px 16px 14px 14px;
+  background: transparent;
+  border: 1.5px dashed var(--hairline);
+  box-shadow: none;
+}
+
+.contact__card--soon .contact__emoji {
+  filter: grayscale(0.4);
+  opacity: 0.7;
+  box-shadow: none;
+}
+
+.contact__card--soon .contact__label {
+  color: var(--ink-2);
+}
+
+.contact__soon {
+  flex: none;
+  padding: 2px 9px 3px;
+  border-radius: var(--r-pill);
+  border: 1px dashed var(--ink-3);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+
+/* ── paper plane ────────────────────────────────────────────────────────── */
+
+.contact__plane-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--s-2);
+  margin-top: var(--s-6);
+}
+
+.contact__plane-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: 54px;
+  padding: 0 22px 0 8px;
+  border-radius: var(--r-pill);
+  background: var(--surface-strong);
+  border: 1.5px solid color-mix(in oklab, var(--accent) 35%, transparent);
+  color: var(--accent-ink);
+  font-weight: 700;
+  font-size: var(--text-base);
+  box-shadow:
+    var(--shadow-sm),
+    0 10px 24px -14px var(--accent-glow);
+  transition:
+    transform var(--dur-3) var(--ease-spring),
+    box-shadow var(--dur-3) var(--ease-out);
+}
+
+.contact__plane-btn:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    var(--shadow-md),
+    0 14px 28px -14px var(--accent-glow);
+}
+
+.contact__plane-btn:active {
+  transform: scale(0.97);
+}
+
+.contact__plane-btn[aria-disabled='true'] {
+  cursor: default;
+  opacity: 0.7;
+}
+
+.contact__plane-btn:focus-visible {
+  border-radius: var(--r-pill);
+}
+
+.contact__plane-icon {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(140deg, var(--peach-200), var(--lavender-300));
+  transition: transform var(--dur-3) var(--ease-spring);
+}
+
+.contact__plane-btn:hover .contact__plane-icon {
+  transform: translate(3px, -3px) rotate(-10deg);
+}
+
+.contact__plane-hint {
+  font-size: 20px;
+  color: var(--ink-2);
+  rotate: -2deg;
+}
+
+/* the sky the plane flies through (portalled to <body>) */
+.contact-sky {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-fx);
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.contact-sky__plane {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 56px;
+  height: 56px;
+  margin: -28px 0 0 -28px;
+  filter: drop-shadow(0 8px 10px rgb(59 37 89 / 0.3));
+  will-change: transform, opacity;
+}
+
+.contact-sky__puff {
+  position: absolute;
+  width: 11px;
+  height: 11px;
+  margin: -5.5px 0 0 -5.5px;
+  border-radius: 50%;
+  background: var(--coral-300);
+  box-shadow: 0 0 10px var(--coral-300);
+}
+
+.contact-sky__puff[data-tone='1'] {
+  background: var(--lavender-300);
+  box-shadow: 0 0 10px var(--lavender-300);
+}
+
+.contact-sky__puff[data-tone='2'] {
+  width: 7px;
+  height: 7px;
+  margin: -3.5px 0 0 -3.5px;
+  background: var(--butter-300);
+  box-shadow: 0 0 10px var(--butter-400);
+}
+
+/* phones: hero a little tighter */
+.contact[data-mobile] .contact__scroll {
+  padding: var(--s-6) var(--s-5) var(--s-10);
+}
+
+.contact[data-mobile] .contact__links {
+  margin-top: var(--s-8);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .contact__thread::before,
+  .contact__knot,
+  .contact__wave,
+  .contact__hero:hover .contact__wave {
+    animation: none;
+  }
+
+  .contact__card:not(.contact__card--soon):hover,
+  .contact__plane-btn:hover,
+  .contact__card:hover .contact__emoji,
+  .contact__card:hover .contact__go,
+  .contact__plane-btn:hover .contact__plane-icon {
+    transform: none;
+  }
+}

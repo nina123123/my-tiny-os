@@ -1,0 +1,91 @@
+# ☀️ my-tiny-os: build + deploy to GitHub Pages
+#
+# What happens on every push:
+#   • any branch → install, lint and build (a safety check that nothing is broken)
+#   • main       → the same, and then the fresh build goes live on GitHub Pages
+#
+# One-time setup: Settings → Pages → Build and deployment → Source: "GitHub Actions".
+# Supabase keys (guestbook) are repo *variables* (not secrets). See docs/GUESTBOOK.md.
+
+name: Deploy my-tiny-os
+
+on:
+  push:
+    branches: ['**']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      # Guestbook settings live in the committed .env.production (the publishable
+      # key is public by design; row level security protects the table).
+      # Repo *variables* with the same names override it when they're set; unset
+      # variables are skipped so they can't blank out .env.production.
+      - name: Guestbook keys from repo variables (optional)
+        if: vars.VITE_SUPABASE_URL != '' && vars.VITE_SUPABASE_ANON_KEY != ''
+        run: |
+          printf 'VITE_SUPABASE_URL=%s\nVITE_SUPABASE_ANON_KEY=%s\n' \
+            '${{ vars.VITE_SUPABASE_URL }}' '${{ vars.VITE_SUPABASE_ANON_KEY }}' > .env.production.local
+          if [ -n '${{ vars.VITE_GUESTBOOK_TABLE }}' ]; then
+            printf 'VITE_GUESTBOOK_TABLE=%s\n' '${{ vars.VITE_GUESTBOOK_TABLE }}' >> .env.production.local
+          fi
+
+      - name: Build
+        run: npm run build
+
+      # Safety net: no photo goes live with hidden EXIF / GPS / XMP data, even one
+      # uploaded without running scripts/resize-photos.py first. Lossless, plain
+      # Python (no Pillow needed); it leaves a warning on the run for each photo
+      # it had to clean, so the copy in the repo can be cleaned too.
+      - name: Remove hidden photo metadata from the build
+        run: python3 scripts/resize-photos.py --strip-only dist
+
+      - name: Upload the site for GitHub Pages
+        if: github.ref == 'refs/heads/main'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    name: Deploy
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # Only one deploy at a time. A deploy that has started always finishes; if several
+    # are waiting, the newest one wins. This sits on the deploy job, not the whole
+    # workflow, so lint/build checks on other branches never queue behind a deploy
+    # and can't bump a waiting one.
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,230 @@
+/* The menu bar — 32px of frosted glass across the top */
+
+.mbar {
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: var(--z-menubar);
+  height: var(--menubar-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-4);
+  padding: 0 8px 0 8px;
+  color: var(--ink);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* The frosted glass lives on its own layer so the header isn't a "backdrop
+   root": the dropdown menus inside it can then blur the page behind them. */
+.mbar__bg {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(to bottom, var(--surface-strong), var(--surface));
+  border-bottom: 1px solid var(--border);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  backdrop-filter: blur(24px) saturate(180%);
+  box-shadow: 0 6px 24px -14px rgb(59 37 89 / 0.28);
+  pointer-events: none;
+}
+
+:root[data-mood='night'] .mbar__bg {
+  box-shadow: 0 8px 28px -14px rgb(0 0 0 / 0.6);
+}
+
+.mbar__left,
+.mbar__right {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.mbar__left {
+  gap: 2px;
+}
+
+.mbar__right {
+  gap: 4px;
+  flex: none;
+}
+
+.mbar__slot {
+  position: relative;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.mbar__trigger {
+  height: 24px;
+  padding: 0 10px;
+  border-radius: var(--r-pill);
+  font-weight: 600;
+  letter-spacing: 0.005em;
+  color: var(--ink);
+  transition:
+    background-color var(--dur-1) var(--ease-out),
+    color var(--dur-1) var(--ease-out);
+}
+
+.mbar__trigger:hover {
+  background: var(--surface-hover);
+}
+
+.mbar__trigger[aria-expanded='true'] {
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+}
+
+.mbar__trigger:focus-visible {
+  border-radius: var(--r-pill);
+  box-shadow: inset 0 0 0 2px var(--accent);
+}
+
+.mbar__trigger--logo {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  padding: 0;
+}
+
+.mbar__logo {
+  display: grid;
+  place-items: center;
+  filter: drop-shadow(0 1px 4px var(--accent-glow));
+}
+
+.mbar__brand {
+  margin: 0 8px 0 2px;
+  font-family: var(--font-display);
+  font-variation-settings: var(--display-axes);
+  font-size: 15.5px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.mbar__drop {
+  position: absolute;
+  top: calc(100% + 3px);
+  left: 0;
+}
+
+/* ── right side ─────────────────────────────────────────────────── */
+
+.mbar__icon-btn {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 24px;
+  border-radius: var(--r-pill);
+  color: var(--ink-2);
+  font-size: 14px;
+  line-height: 1;
+  transition:
+    background-color var(--dur-1) var(--ease-out),
+    color var(--dur-1) var(--ease-out),
+    transform var(--dur-2) var(--ease-spring);
+}
+
+.mbar__icon-btn:hover {
+  background: var(--surface-hover);
+  color: var(--ink);
+}
+
+.mbar__icon-btn:active {
+  transform: scale(0.92);
+}
+
+.mbar__icon-btn:focus-visible {
+  border-radius: var(--r-pill);
+  box-shadow: inset 0 0 0 2px var(--accent);
+}
+
+.mbar__icon-btn[aria-pressed='true'] {
+  color: var(--accent-ink);
+}
+
+.mbar__mood {
+  overflow: hidden;
+}
+
+.mbar__mood-glyph {
+  display: block;
+  font-size: 14px;
+  line-height: 1;
+}
+
+.mbar__battery {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 22px;
+  margin: 0 4px;
+  padding: 0 10px 0 8px;
+  border-radius: var(--r-pill);
+  background: var(--surface-sunken);
+  box-shadow: inset 0 0 0 1px var(--hairline);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+
+.mbar__battery-glyph {
+  color: var(--ink);
+}
+
+.mbar__battery-fill {
+  fill: var(--mint-400);
+  animation: mbar-charge 3.2s var(--ease-in-out) infinite;
+}
+
+@keyframes mbar-charge {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+
+.mbar__clock {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 1px;
+  padding: 0 6px 0 4px;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.mbar__ampm {
+  margin-left: 2px;
+  font-size: 10.5px;
+  color: var(--ink-2);
+}
+
+@media (max-width: 960px) {
+  .mbar__battery span:not([aria-hidden]) {
+    display: none;
+  }
+}
+
+@media (pointer: coarse) {
+  .mbar__trigger,
+  .mbar__icon-btn {
+    height: 32px;
+    min-width: 44px;
+  }
+}

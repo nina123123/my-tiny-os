@@ -1,0 +1,7 @@
+/* Desktop shell root. No z-index on purpose: windows (100 + z), dock,
+   menu bar and menus all stack inside <main class="os">. */
+.dshell {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
